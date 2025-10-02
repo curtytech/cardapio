@@ -318,7 +318,7 @@
         <div class="gradient-bg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
                 <div class="glass-effect rounded-3xl p-8">
-                    <p class="text-white/90 text-lg font-medium">© {{ date('Y') }} {{ $user->name }}. Cardápio Digital.</p>
+                    <p class="text-white/90 text-lg font-medium">© {{ date('Y') }} <a href="https://phelipecurty.vercel.app" target="_blank" class="text-white/90 hover:text-white/80">Phelipe Curty</a> Cardápio Digital.</p>
                     <p class="text-white/70 mt-2">Desenvolvido com ❤️ para uma experiência gastronômica única</p>
                 </div>
             </div>
