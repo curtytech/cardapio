@@ -55,7 +55,8 @@ class CategoryResource extends Resource
                         Forms\Components\Textarea::make('description')
                             ->label('Descrição')
                             ->maxLength(500)
-                            ->rows(3),
+                            ->rows(3)
+                            ->required(),
                         Forms\Components\ColorPicker::make('color')
                             ->label('Cor')
                             ->default('#3B82F6'),
