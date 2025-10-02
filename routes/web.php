@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rota para exibir o cardápio completo de um usuário pelo slug
-Route::get('/menu/{slug}', [MenuController::class, 'show'])->name('menu.show');
+Route::get('/{slug}', [MenuController::class, 'show'])->name('menu.show');
 
 // Rota para exibir produtos de uma categoria específica do usuário
 Route::get('/menu/{userSlug}/{categorySlug}', [MenuController::class, 'category'])->name('menu.category');
