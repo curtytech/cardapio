@@ -217,7 +217,7 @@
                             <div class="flex-1">
                                 <h2 class="text-3xl font-bold mb-2" style="color: {{ $category->color ?? $user->color_primary }};">{{ $category->name }}</h2>
                                 @if($category->description)
-                                    <p class="text-gray-600 text-lg">{{ !empty($category->description) ? $category->description : 'Sem descrição' }}</p>
+                                    <p class="text-gray-600 text-lg">{{!! !empty($category->description) ? $category->description : '' !!}}</p>
                                 @endif
                                 <div class="text-sm text-gray-500 mt-2">
                                     <span class="inline-flex items-center">
@@ -270,7 +270,7 @@
 
                                             <!-- Descrição -->
                                             @if($product->description)
-                                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">{{ !empty($product->description) ? $product->description : 'Sem descrição' }}</p>
+                                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">{{!! !empty($product->description) ? $product->description : '' !!}}</p>
                                             @endif
 
                                             <!-- Características -->
