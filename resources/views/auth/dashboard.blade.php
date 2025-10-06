@@ -177,7 +177,7 @@
                         </div>
                         <div class="flex items-center text-white/80">
                             <i class="fas fa-link w-5"></i>
-                            <span class="ml-3">{{ url('/menu/' . $user->slug) }}</span>
+                            <span class="ml-3">{{ url('/' . $user->slug) }}</span>
                         </div>
                     </div>
                 </div>
