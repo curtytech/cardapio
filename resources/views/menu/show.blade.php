@@ -68,7 +68,7 @@
                     @endif
                     
                     <!-- Nome do Restaurante -->
-                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-2xl">{{ $user->name }}</h1>
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-2xl">{{ $user->name }}</h1>
                     
                     <!-- Informações Básicas -->
                     @if($user->address || $user->city)
@@ -91,7 +91,7 @@
                                  class="w-full h-full object-cover">
                         </div>
                     @endif
-                    <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">{{ $user->name }}</h1>
+                    <h1 class="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">{{ $user->name }}</h1>
                 </div>
             </div>
         @endif
@@ -190,7 +190,7 @@
             <!-- Menu de Navegação das Categorias -->
             <nav class="mb-12 animate-fade-in">
                 <div class="bg-white/80 backdrop-blur-lg rounded-3xl p-6 shadow-xl border border-white/20">
-                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Categorias</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 text-center mb-6">Categorias</h2>
                     <div class="flex flex-wrap gap-3 justify-center">
                         @foreach($categories as $category)
                             <a href="#categoria-{{ $category->slug }}" 
@@ -215,9 +215,9 @@
                         <div class="flex items-center gap-6">
                             <div class="w-6 h-12 rounded-full shadow-lg" style="background: {{ $category->color ?? $user->color_primary }};"></div>
                             <div class="flex-1">
-                                <h2 class="text-3xl font-bold mb-2" style="color: {{ $category->color ?? $user->color_primary }};">{{ $category->name }}</h2>
+                                <h2 class="text-2xl md:text-3xl font-bold mb-2" style="color: {{ $category->color ?? $user->color_primary }};">{{ $category->name }}</h2>
                                 @if($category->description)
-                                    <p class="text-gray-600 text-lg">{{!! !empty($category->description) ? $category->description : '' !!}}</p>
+                                    <p class="text-gray-600 text-sm md:text-base">{!! !empty($category->description) ? $category->description : '' !!}</p>
                                 @endif
                                 <div class="text-sm text-gray-500 mt-2">
                                     <span class="inline-flex items-center">
@@ -262,15 +262,15 @@
                                         <div class="p-6">
                                             <!-- Nome e Preço -->
                                             <div class="flex justify-between items-start mb-3">
-                                                <h3 class="text-xl font-bold text-gray-800 flex-1 transition-colors" style="color: {{ $category->color ?? $user->color_primary }};">{{ $product->name }}</h3>
+                                                <h3 class="text-base sm:text-lg md:text-xl font-bold text-gray-800 flex-1 transition-colors" style="color: {{ $category->color ?? $user->color_primary }};">{{ $product->name }}</h3>
                                                 <div class="ml-3">
-                                                    <span class="text-2xl font-bold ml-2" style="color: {{ $category->color ?? $user->color_primary }};">{{ $product->formatted_price }}</span>
+                                                    <span class="text-xl md:text-2xl font-bold ml-2" style="color: {{ $category->color ?? $user->color_primary }};">{{ $product->formatted_price }}</span>
                                                 </div>
                                             </div>
 
                                             <!-- Descrição -->
                                             @if($product->description)
-                                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">{{!! !empty($product->description) ? $product->description : '' !!}}</p>
+                                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">{!! !empty($product->description) ? $product->description : '' !!} </p>
                                             @endif
 
                                             <!-- Características -->
@@ -300,8 +300,8 @@
                     <div class="floating-animation">
                         <i class="fas fa-utensils text-8xl text-indigo-300 mb-6"></i>
                     </div>
-                    <h3 class="text-3xl font-bold text-gray-800 mb-4">Cardápio em Preparação</h3>
-                    <p class="text-gray-600 text-lg leading-relaxed">Este restaurante ainda está organizando seu cardápio. Volte em breve para descobrir deliciosas opções!</p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">Cardápio em Preparação</h3>
+                    <p class="text-gray-600 text-base md:text-lg leading-relaxed">Este restaurante ainda está organizando seu cardápio. Volte em breve para descobrir deliciosas opções!</p>
                     <div class="mt-8">
                         <div class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 px-6 py-3 rounded-full font-medium">
                             <i class="fas fa-clock"></i>
@@ -318,8 +318,8 @@
         <div class="gradient-bg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
                 <div class="glass-effect rounded-3xl p-8">
-                    <p class="text-white/90 text-lg font-medium">© {{ date('Y') }} <a href="https://phelipecurty.vercel.app" target="_blank" class="text-white/90 hover:text-white/80">Phelipe Curty</a> Cardápio Digital.</p>
-                    <p class="text-white/70 mt-2">Desenvolvido com ❤️ para uma experiência gastronômica única</p>
+                    <p class="text-white/90 text-sm md:text-lg font-medium">© {{ date('Y') }} <a href="https://phelipecurty.vercel.app" target="_blank" class="text-white/90 hover:text-white/80">Phelipe Curty</a> Cardápio Digital.</p>
+                    <p class="text-white/70 mt-2 text-sm md:text-base">Desenvolvido com ❤️ para uma experiência gastronômica única</p>
                 </div>
             </div>
         </div>
