@@ -29,7 +29,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-600 via-purple-800 to-indigo-700">
+<body class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-900 to-blue-900">
     <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
@@ -196,11 +196,24 @@
                                 <i class="fab fa-whatsapp w-5"></i>
                                 <span class="ml-3">{{ $user->whatsapp }}</span>
                             </div>
-                        @endif
+                        @endif                      
                         @if($user->address)
                             <div class="flex items-center text-white/80">
                                 <i class="fas fa-map-marker-alt w-5"></i>
-                                <span class="ml-3">{{ $user->address }}</span>
+                                <span class="ml-3">
+                                    @if($user->state){{$user->state}}@endif
+                                    @if($user->city) - {{$user->city}}@endif
+                                    @if($user->address) - {{$user->address}}@endif
+                                    @if($user->number) - {{$user->number}}@endif
+                                </span>
+                            </div>
+                        @endif
+                        @if($user->zipcode)
+                            <div class="flex items-center text-white/80">
+                                <i class="fas fa-map-marker-alt w-5"></i>
+                                <span class="ml-3">
+                                   {{ ($user->zipcode)}}
+                                </span>
                             </div>
                         @endif
                     </div>
