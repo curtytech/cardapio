@@ -60,7 +60,7 @@
                     <i class="fas fa-user-plus text-3xl text-white"></i>
                 </div>
                 <h2 class="text-3xl font-bold text-white mb-2">Crie sua conta</h2>
-                <p class="text-white/80">Comece a criar seu cardápio digital hoje mesmo</p>
+                <p class="text-white/80">Comece a criar seu cardápio virtual hoje mesmo</p>
             </div>
 
             <!-- Formulário de Registro -->

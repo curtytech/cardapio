@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Sistema de Cardápio Digital') }}</title>
+    <title>{{ config('app.name', 'Sistema de Cardápio Virtual') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="{{ asset('css/loader.css') }}" rel="stylesheet">
@@ -49,7 +49,7 @@
                     <div class="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
                         <i class="fas fa-utensils text-white text-lg"></i>
                     </div>
-                    <h1 class="text-xl font-bold text-white">Cardápio Digital</h1>
+                    <h1 class="text-xl font-bold text-white">Cardápio Virtual</h1>
                 </div>
                 
                 @if (Route::has('login'))
@@ -91,13 +91,13 @@
                 <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
                     Cardápio
                     <span class="block gradient-text bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                        Digital
+                        Virtual
                     </span>
                 </h1>
                 
                 <!-- Subtítulo -->
                 <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-                    Crie e gerencie seu cardápio digital de forma simples e moderna. 
+                    Crie e gerencie seu cardápio virtual de forma simples e moderna. 
                     Atraia mais clientes com uma apresentação profissional.
                 </p>
                 
