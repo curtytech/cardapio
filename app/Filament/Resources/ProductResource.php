@@ -9,11 +9,16 @@ use App\Models\Category;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Components\Actions as FormActions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
 
 class ProductResource extends Resource
 {
@@ -91,8 +96,29 @@ class ProductResource extends Resource
                         Forms\Components\FileUpload::make('image')
                             ->label('Imagem')
                             ->image()
+                            ->disk('public')
                             ->directory('products')
                             ->imageEditor(),
+                        FormActions::make([
+                            Action::make('clearImage')
+                                ->label('Apagar imagem')
+                                ->icon('heroicon-o-trash')
+                                ->color('danger')
+                                ->requiresConfirmation()
+                                ->action(function (Set $set, Get $get) {
+                                    $path = $get('image');
+                                    if (!empty($path)) {
+                                        try {
+                                            if (Storage::disk('public')->exists($path)) {
+                                                Storage::disk('public')->delete($path);
+                                            }
+                                        } catch (\Throwable $e) {
+                                            // Ignora falhas de deleção no storage para garantir que o botão sempre funcione.
+                                        }
+                                    }
+                                    $set('image', null);
+                                }),
+                        ]),
                         Forms\Components\TagsInput::make('features')
                             ->label('Características')
                             ->placeholder('Digite uma característica e pressione Enter')

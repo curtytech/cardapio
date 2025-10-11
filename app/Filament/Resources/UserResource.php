@@ -7,11 +7,16 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Components\Actions as FormActions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
 
 class UserResource extends Resource
 {
@@ -116,11 +121,51 @@ class UserResource extends Resource
                         Forms\Components\FileUpload::make('image_logo')
                             ->label('Logo')
                             ->image()
+                            ->disk('public')
                             ->directory('logos'),
                         Forms\Components\FileUpload::make('image_banner')
                             ->label('Banner')
                             ->image()
+                            ->disk('public')
                             ->directory('banners'),
+                        FormActions::make([
+                            Action::make('clearLogo')
+                                ->label('Apagar logo')
+                                ->icon('heroicon-o-trash')
+                                ->color('danger')
+                                ->requiresConfirmation()
+                                ->action(function (Set $set, Get $get) {
+                                    $path = $get('image_logo');
+                                    if (!empty($path)) {
+                                        try {
+                                            if (Storage::disk('public')->exists($path)) {
+                                                Storage::disk('public')->delete($path);
+                                            }
+                                        } catch (\Throwable $e) {
+                                            // Ignora possíveis erros ao deletar o arquivo
+                                        }
+                                    }
+                                    $set('image_logo', null);
+                                }),
+                            Action::make('clearBanner')
+                                ->label('Apagar banner')
+                                ->icon('heroicon-o-trash')
+                                ->color('danger')
+                                ->requiresConfirmation()
+                                ->action(function (Set $set, Get $get) {
+                                    $path = $get('image_banner');
+                                    if (!empty($path)) {
+                                        try {
+                                            if (Storage::disk('public')->exists($path)) {
+                                                Storage::disk('public')->delete($path);
+                                            }
+                                        } catch (\Throwable $e) {
+                                            // Ignora possíveis erros ao deletar o arquivo
+                                        }
+                                    }
+                                    $set('image_banner', null);
+                                }),
+                        ]),
                     ])->columns(2),
                     
                 Forms\Components\Section::make('Personalização')
