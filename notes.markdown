@@ -28,3 +28,8 @@ php artisan storage:link
 
 ### Ngrok
 ngrok http 80 --host-header=sitio-esperanca.test
+
+
+### Criar um link simbólico (symlink)
+cd ~/domains/sitio-esperanca.test/public_html
+ln -s ~/storage storage
