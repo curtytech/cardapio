@@ -42,7 +42,7 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
     <!-- Header -->
-    <header class="absolute top-0 w-full z-10">
+    <header class="hidden md:absolute md:top-0 md:w-full md:z-10 md:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <div class="flex items-center">
@@ -83,12 +83,12 @@
             <!-- Hero Section -->
             <div class="animate-fade-in">
                 <!-- Logo Principal -->
-                <div class="mx-auto h-32 w-32 bg-white/20 rounded-full flex items-center justify-center mb-8 floating-animation">
+                <div class="mx-auto h-32 w-32 bg-white/20 rounded-full flex items-center justify-center floating-animation mt-10">
                     <i class="fas fa-utensils text-5xl text-white"></i>
                 </div>
                 
                 <!-- Título Principal -->
-                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 floating-animation">
                     Cardápio
                     <span class="block gradient-text bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
                         Virtual
@@ -123,7 +123,7 @@
             </div>
             
             <!-- Features -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 animate-fade-in mb-5">
                 <div class="glass-effect rounded-xl p-6 text-center">
                     <div class="h-16 w-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                         <i class="fas fa-mobile-alt text-2xl text-blue-300"></i>
@@ -141,8 +141,8 @@
                 </div>
                 
                 <div class="glass-effect rounded-xl p-6 text-center">
-                    <div class="h-16 w-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-share-alt text-2xl text-purple-300"></i>
+                    <div class="h-16 w-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-share-alt text-2xl text-orange-300"></i>
                     </div>
                     <h3 class="text-xl font-semibold text-white mb-2">Compartilhável</h3>
                     <p class="text-white/80">Compartilhe seu cardápio com um link único e personalizado</p>
