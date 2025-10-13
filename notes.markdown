@@ -31,5 +31,5 @@ ngrok http 80 --host-header=sitio-esperanca.test
 
 
 ### Criar um link simbólico (symlink)
-cd ~/domains/sitio-esperanca.test/public_html
-ln -s ~/storage storage
+cd ~/domains/nome-do-dominio/public_html
+ln -s /home/u233139548/domains/cardapiovirtual.space/storage/app/public storage
