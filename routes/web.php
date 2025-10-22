@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MercadoPagoController;
 
 // Página inicial
 Route::get('/', function () {
@@ -27,6 +28,14 @@ Route::middleware('auth')->group(function () {
     
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    // Checkout
+    Route::middleware('auth')->post('/checkout/mercadopago', [MercadoPagoController::class, 'checkout'])
+        ->name('mercadopago.checkout');
+    
+    // Webhook (não requer auth)
+    Route::post('/api/webhook/mercadopago', [MercadoPagoController::class, 'webhook'])
+        ->name('mercadopago.webhook');
 });
 
 // Rota para exibir o cardápio completo de um usuário pelo slug

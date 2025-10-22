@@ -38,6 +38,7 @@ class User extends Authenticatable
         'role',
         'color_primary',
         'color_secondary',
+        
     ];
 
     /**

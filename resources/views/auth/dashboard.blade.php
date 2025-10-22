@@ -226,3 +226,15 @@
     <script src="{{ asset('js/loader.js') }}"></script>
 </body>
 </html>
+
+{{-- Dentro do conteúdo do dashboard, onde fizer sentido mostrar o botão --}}
+@auth
+    @if(auth()->user()->role !== 'admin')
+        <form method="POST" action="{{ route('mercadopago.checkout') }}">
+            @csrf
+            <button type="submit" class="btn btn-primary">
+                Pagar assinatura anual (R$ {{ number_format((float) env('PRECO_ANUAL', 60), 2, ',', '.') }})
+            </button>
+        </form>
+    @endif
+@endauth

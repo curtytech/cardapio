@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\Payment;
 
 class MenuController extends Controller
 {
@@ -17,6 +18,14 @@ class MenuController extends Controller
         // Busca o usuário pelo slug
         $user = User::where('slug', $slug)->firstOrFail();
         
+        // Verifica se existe algum pagamento para esse usuário
+        $hasPayment = Payment::where('user_id', $user->id)
+            ->where('mercadopago_status', 'approved')
+            ->where(function ($q) {
+                $q->whereNull('expiration_date')->orWhere('expiration_date', '>', now());
+            })
+            ->exists();
+
         // Busca as categorias do usuário com seus produtos ativos
         $categories = Category::where('user_id', $user->id)
             ->where('is_active', true)
@@ -32,7 +41,7 @@ class MenuController extends Controller
             return $category->products->count() > 0;
         });
         
-        return view('menu.show', compact('user', 'categories'));
+        return view('menu.show', compact('user', 'categories', 'hasPayment'));
     }
     
     /**

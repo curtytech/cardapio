@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('image_logo')->nullable();
             $table->string('image_banner')->nullable();
-            $table->string('slug')->unique();      
+            $table->string('slug')->unique();
             $table->string('celphone')->unique()->nullable();
             $table->string('zipcode')->nullable();
             $table->string('address')->nullable();
@@ -32,8 +32,7 @@ return new class extends Migration
             $table->string('whatsapp')->nullable();
             $table->string('email')->unique();
             $table->string('color_primary')->default('#0000FF');
-            $table->string('color_secondary')->default('#000000');
-
+            $table->string('color_secondary')->default('#000000');           
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('admin');
@@ -70,7 +69,7 @@ return new class extends Migration
                 'zipcode' => '01234-567',
             ]
         );
-        
+
         User::firstOrCreate(
             ['email' => 'admin@admin.com'],
             [
