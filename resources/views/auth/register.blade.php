@@ -149,12 +149,13 @@
                                 name="celphone"
                                 value="{{ old('celphone') }}"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/90 backdrop-blur-sm"
-                                placeholder="(11) 99999-9999">
+                                placeholder="(11) 99999-9999"
+                                inputmode="numeric"
+                                autocomplete="tel">
                             @error('celphone')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
-
                         <!-- WhatsApp -->
                         <div>
                             <label for="whatsapp" class="block text-sm font-medium text-white mb-2">
@@ -165,11 +166,14 @@
                                 name="whatsapp"
                                 value="{{ old('whatsapp') }}"
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/90 backdrop-blur-sm"
-                                placeholder="(11) 99999-9999">
+                                placeholder="(11) 99999-9999"
+                                inputmode="numeric"
+                                autocomplete="tel">
                             @error('whatsapp')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+                        <!-- Scripts -->
                     </div>
 
                     <!-- Endereço -->
@@ -287,3 +291,24 @@
 </body>
 
 </html>
+<script src="https://cdn.jsdelivr.net/npm/imask@6.4.3/dist/imask.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneMaskOptions = {
+            mask: [
+                { mask: '(00) 0000-0000' },  // 10 dígitos
+                { mask: '(00) 00000-0000' }  // 11 dígitos (celular)
+            ],
+            dispatch: function (appended, dynamicMasked) {
+                const value = (dynamicMasked.value + appended).replace(/\D/g, '');
+                return value.length > 10 ? dynamicMasked.compiledMasks[1] : dynamicMasked.compiledMasks[0];
+            }
+        };
+
+        const celInput = document.getElementById('celphone');
+        const whatsInput = document.getElementById('whatsapp');
+
+        if (celInput) IMask(celInput, phoneMaskOptions);
+        if (whatsInput) IMask(whatsInput, phoneMaskOptions);
+    });
+</script>
