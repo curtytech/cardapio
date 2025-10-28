@@ -355,11 +355,11 @@
 
     <!-- Footer -->
     <footer class="relative overflow-hidden">
-        <div class="gradient-bg">
+        <div class="{{ 'bg-['.$user->color_primary.']' }} ">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
                 <div class="glass-effect rounded-3xl p-8">
                     <p class="text-white/90 text-sm md:text-lg font-medium">© {{ date('Y') }} <a href="https://phelipecurty.vercel.app" target="_blank" class="text-white/90 hover:text-white/80">Phelipe Curty</a> Cardápio Virtual.</p>
-                    <p class="text-white/70 mt-2 text-sm md:text-base">Desenvolvido com ❤️ para uma experiência gastronômica única</p>
+                    <!-- <p class="text-white/70 mt-2 text-sm md:text-base">Desenvolvido com ❤️ para uma experiência gastronômica única</p> -->
                 </div>
             </div>
         </div>
@@ -368,34 +368,15 @@
     {{-- Botão/Painel de Pagamento (colapsável, não intrusivo) --}}
     @if(!$hasPayment)
     <div id="pay-toggle-{{ $user->id }}" class="fixed bottom-7 z-50 animate-bounce" style="right: 7rem;">
-        <button id="pay-open-btn-{{ $user->id }}"
-            class="group inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105">
-            <i class="fas fa-credit-card text-lg group-hover:scale-110 transition-transform duration-300"></i>
-            <span>Pagar assinatura</span>
-        </button>
+        <form method="POST" action="{{ route('mercadopago.checkout') }}">
+            @csrf
+            <button id="pay-open-btn-{{ $user->id }}"
+                class="group inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-credit-card text-lg group-hover:scale-110 transition-transform duration-300"></i>
+                <span>Pagar assinatura</span>
+            </button>
+        </form>
     </div>
-
-    <div id="pay-container-{{ $user->id }}" class="fixed bottom-20 right-4 z-50 max-w-sm w-[22rem]" style="display:none;">
-        <div class="bg-white/95 backdrop-blur-sm border border-emerald-200 rounded-2xl shadow-xl">
-            <div class="flex items-start justify-between px-4 pt-4">
-                <p class="text-red-600 font-medium">
-                    Atenção: É necessário fazer o pagamento para acessar o cardápio.
-                </p>
-                <button id="pay-close-btn-{{ $user->id }}" class="text-gray-500 hover:text-gray-700 ml-3">
-                    Fechar
-                </button>
-            </div>
-            <div class="px-4 pb-4 mt-3">
-                <a href="{{ $user->payment_link }}"
-                    target="_blank"
-                    class="group inline-flex items-center gap-3 w-full justify-center bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105">
-                    <i class="fas fa-credit-card text-lg group-hover:scale-110 transition-transform duration-300"></i>
-                    <span>Pagar Agora</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
     @endif
 
     <!-- Botões Flutuantes de Redes Sociais (Ocultos no Mobile) -->

@@ -15,7 +15,7 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    
+
     // Registro
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
@@ -25,18 +25,17 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
-    
+
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    
+
     // Checkout
-    Route::middleware('auth')->post('/checkout/mercadopago', [MercadoPagoController::class, 'checkout'])
-        ->name('mercadopago.checkout');
-    
-    // Webhook (não requer auth)
-    Route::post('/api/webhook/mercadopago', [MercadoPagoController::class, 'webhook'])
-        ->name('mercadopago.webhook');
+    Route::post('/checkout/mercadopago', [MercadoPagoController::class, 'checkout'])->name('mercadopago.checkout');
 });
+
+// Webhook (não requer auth)
+Route::post('/api/webhook/mercadopago', [MercadoPagoController::class, 'webhook'])
+    ->name('mercadopago.webhook');
 
 // Rota para exibir o cardápio completo de um usuário pelo slug
 Route::get('/{slug}', [MenuController::class, 'show'])->name('menu.show');
