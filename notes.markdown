@@ -27,7 +27,7 @@ php artisan db:seed
 php artisan storage:link
 
 ### Ngrok
-ngrok http 80 --host-header=sitio-esperanca.test
+ngrok http 80 --host-header=cardapiovirtual
 
 
 ### Criar um link simbólico (symlink)

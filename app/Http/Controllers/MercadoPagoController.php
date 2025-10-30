@@ -86,45 +86,92 @@ class MercadoPagoController extends Controller
 
     public function webhook(Request $request)
     {
-        $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
-        $payload = $request->all();
+        // Log básico do evento recebido
+        Log::info('Webhook Mercado Pago recebido', [
+            'query' => $request->query(),
+            'body' => $request->all(),
+            'headers' => [
+                'Content-Type' => $request->header('Content-Type'),
+                'X-Request-Id' => $request->header('X-Request-Id'),
+            ],
+        ]);
 
-        $paymentId = data_get($payload, 'data.id') ?? data_get($payload, 'id') ?? null;
-        if (!$paymentId) {
-            Log::warning('Webhook Mercado Pago sem paymentId', ['payload' => $payload]);
-            return response()->json(['ok' => true]);
+        $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
+        if (!$accessToken) {
+            Log::error('MERCADOPAGO_ACCESS_TOKEN não configurado');
+            return response()->json(['ok' => true], 200);
         }
 
+        // Suporta payloads: { data: { id }, type: 'payment', action: 'payment.created' }
+        // e também id via query string (?id=...&type=payment)
+        $paymentId = $request->input('data.id')
+            ?? $request->input('id')
+            ?? $request->query('id');
+
+        $eventType = $request->input('type') ?? $request->query('type') ?? 'payment';
+        $action = $request->input('action') ?? null;
+
+        if (!$paymentId) {
+            Log::warning('Webhook sem paymentId', ['payload' => $request->all()]);
+            return response()->json(['ok' => true], 200);
+        }
+
+        if ($eventType !== 'payment') {
+            Log::info('Evento ignorado (não é payment)', ['type' => $eventType, 'action' => $action]);
+            return response()->json(['ok' => true], 200);
+        }
+
+        // Consulta detalhes do pagamento
         $paymentResp = Http::withToken($accessToken)
             ->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
 
         if (!$paymentResp->successful()) {
             Log::error('Falha ao consultar pagamento no Mercado Pago', [
+                'payment_id' => $paymentId,
                 'status' => $paymentResp->status(),
                 'body' => $paymentResp->body(),
             ]);
+            // Retorna 200 para evitar retries excessivos; mantemos logs para análise
             return response()->json(['ok' => true], 200);
         }
 
         $detail = $paymentResp->json();
+        Log::info('Detalhe do pagamento obtido', [
+            'payment_id' => $paymentId,
+            'status' => data_get($detail, 'status'),
+            'external_reference' => data_get($detail, 'external_reference'),
+        ]);
+
         $status = data_get($detail, 'status');
-        $dateApproved = data_get($detail, 'date_approved');
+        $dateApproved = data_get($detail, 'date_approved'); // ISO8601
         $userId = (int) (data_get($detail, 'metadata.user_id') ?? data_get($detail, 'external_reference') ?? 0);
 
         $dataPagamento = $dateApproved ? Carbon::parse($dateApproved) : null;
         $expiration = $dataPagamento ? $dataPagamento->copy()->addYear() : null;
 
+        // Tentativas para preference_id
+        $preferenceId =
+            data_get($detail, 'metadata.preference_id')
+            ?? data_get($detail, 'order.id')
+            ?? null;
+
         Payment::updateOrCreate(
             ['mercadopago_payment_id' => (string) $paymentId],
             [
                 'user_id' => $userId ?: null,
-                'mercadopago_preference_id' => data_get($detail, 'metadata.preference_id') ?? null,
+                'mercadopago_preference_id' => $preferenceId,
                 'mercadopago_status' => $status,
                 'data_pagamento' => $dataPagamento,
                 'expiration_date' => $expiration,
                 'mercadopago_response' => json_encode($detail),
             ]
         );
+
+        Log::info('Pagamento registrado/atualizado com sucesso', [
+            'payment_id' => $paymentId,
+            'user_id' => $userId ?: null,
+            'status' => $status,
+        ]);
 
         return response()->json(['ok' => true], 200);
     }

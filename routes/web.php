@@ -33,13 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/mercadopago', [MercadoPagoController::class, 'checkout'])->name('mercadopago.checkout');
 });
 
-// Webhook (não requer auth e sem CSRF)
-Route::post('/api/webhook/mercadopago', [MercadoPagoController::class, 'webhook'])
-    ->name('mercadopago.webhook')
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+// Webhook fica na routes/api.php
 
 // Rota para exibir o cardápio completo de um usuário pelo slug
 Route::get('/{slug}', [MenuController::class, 'show'])->name('menu.show');
 
 // Rota para exibir produtos de uma categoria específica do usuário
-Route::get('/menu/{userSlug}/{categorySlug}', [MenuController::class, 'category'])->name('menu.category');
+// Route::get('/menu/{userSlug}/{categorySlug}', [MenuController::class, 'category'])->name('menu.category');
