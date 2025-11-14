@@ -33,19 +33,25 @@
 
     <div class="w-full max-w-md">
         <!-- Logo/Brand -->
-        <div class="text-center mb-8 fade-in">
-            <div class="floating">
-                <i class="fas fa-utensils text-6xl text-white mb-4"></i>
-            </div>
-            <h1 class="text-3xl font-bold text-white mb-2">{{ config('app.name') }}</h1>
-            <p class="text-white">Faça login em sua conta</p>
-        </div>
 
+         <div class="text-center mb-8 fade-in floating">
+            <div class="mx-auto h-32 w-32 bg-white/20 rounded-full flex items-center justify-center mt-10">
+                <i class="fas fa-utensils text-5xl text-white"></i>
+            </div>
+
+            <!-- Título Principal -->
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                Cardápio
+                <span class="block gradient-text bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    Virtual
+                </span>
+            </h1>
+        </div>
+     
         <!-- Login Form -->
         <div class="glass-effect rounded-2xl p-8 shadow-2xl fade-in">
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
-                @csrf
-                
+                @csrf                
                 <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-white mb-2">

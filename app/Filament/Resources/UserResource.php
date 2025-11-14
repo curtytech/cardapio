@@ -23,11 +23,11 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
-    
+
     protected static ?string $navigationLabel = 'Usuários';
-    
+
     protected static ?string $modelLabel = 'Usuário';
-    
+
     protected static ?string $pluralModelLabel = 'Usuários';
 
     public static function form(Form $form): Form
@@ -39,21 +39,21 @@ class UserResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nome')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(100),
                         Forms\Components\TextInput::make('slug')
                             ->label('Slug')
-                            ->maxLength(255),
+                            ->maxLength(50),
                         Forms\Components\TextInput::make('email')
                             ->label('E-mail')
                             ->email()
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(50),
                         Forms\Components\TextInput::make('password')
                             ->label('Senha')
                             ->password()
-                            ->required(fn (string $context): bool => $context === 'create')
-                            ->dehydrated(fn ($state) => filled($state))
-                            ->maxLength(255),
+                            ->required(fn(string $context): bool => $context === 'create')
+                            ->dehydrated(fn($state) => filled($state))
+                            ->maxLength(20),
                         Forms\Components\Select::make('role')
                             ->label('Função')
                             ->options([
@@ -63,59 +63,74 @@ class UserResource extends Resource
                             ])
                             ->default('user')
                             ->required()
-                            ->disabled(fn () => auth()->user()->role === 'user')
-                            ->dehydrated(fn () => auth()->user()->role !== 'user'),
+                            ->disabled(fn() => auth()->user()->role === 'user')
+                            ->dehydrated(fn() => auth()->user()->role !== 'user'),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Contato')
                     ->schema([
                         Forms\Components\TextInput::make('celphone')
                             ->label('Celular')
                             ->tel()
-                            ->maxLength(255),
+                            ->mask('(99) 99999-9999')
+                            ->placeholder('(99) 99999-9999')
+                            ->maxLength(15)
+                            ->nullable(),
                         Forms\Components\TextInput::make('whatsapp')
                             ->label('WhatsApp')
                             ->tel()
-                            ->maxLength(255),
+                            ->mask('(99) 99999-9999')
+                            ->placeholder('(99) 99999-9999')
+                            ->maxLength(15)
+                            ->nullable(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Endereço')
                     ->schema([
                         Forms\Components\TextInput::make('zipcode')
                             ->label('CEP')
-                            ->maxLength(255),
+                            ->mask('99999-999')
+                            ->placeholder('99999-999')
+                            ->maxLength(10)
+                            ->nullable(),
                         Forms\Components\Textarea::make('address')
                             ->label('Endereço')
-                            ->maxLength(500),
+                            ->maxLength(50),
                         Forms\Components\TextInput::make('number')
                             ->label('Número')
-                            ->maxLength(255),
+                            ->maxLength(50),
                         Forms\Components\TextInput::make('complement')
                             ->label('Complemento')
-                            ->maxLength(255),
+                            ->maxLength(50),
                         Forms\Components\TextInput::make('neighborhood')
                             ->label('Bairro')
-                            ->maxLength(255),
+                            ->maxLength(50),
                         Forms\Components\TextInput::make('city')
                             ->label('Cidade')
-                            ->maxLength(255),
+                            ->maxLength(50)
+                            ->nullable()
+                            ->rule('regex:/^[a-zA-ZÀ-ÿ\s]+$/')
+                            ->helperText('Apenas letras são permitidas.'),
                         Forms\Components\TextInput::make('state')
                             ->label('Estado')
-                            ->maxLength(255),
+                            ->maxLength(50)
+                            ->nullable()
+                            ->rule('regex:/^[a-zA-ZÀ-ÿ\s]+$/')
+                            ->helperText('Apenas letras são permitidas.'),
                     ])->columns(3),
-                    
+
                 Forms\Components\Section::make('Redes Sociais')
                     ->schema([
                         Forms\Components\TextInput::make('instagram')
                             ->label('Instagram')
-                            ->maxLength(255)
+                            ->maxLength(50)
                             ->prefix('@'),
                         Forms\Components\TextInput::make('facebook')
                             ->label('Facebook')
-                            ->maxLength(255)
+                            ->maxLength(50)
                             ->url(),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Imagens')
                     ->schema([
                         Forms\Components\FileUpload::make('image_logo')
@@ -167,7 +182,7 @@ class UserResource extends Resource
                                 }),
                         ]),
                     ])->columns(2),
-                    
+
                 Forms\Components\Section::make('Personalização')
                     ->schema([
                         Forms\Components\ColorPicker::make('color_primary')
@@ -201,13 +216,13 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('role')
                     ->label('Função')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'admin' => 'success',
                         'manager' => 'warning',
                         'user' => 'gray',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'admin' => 'Administrador',
                         'manager' => 'Gerente',
                         'user' => 'Usuário',
@@ -228,11 +243,11 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('instagram')
                     ->label('Instagram')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->formatStateUsing(fn (?string $state): string => $state ? '@' . $state : ''),
+                    ->formatStateUsing(fn(?string $state): string => $state ? '@' . $state : ''),
                 Tables\Columns\TextColumn::make('facebook')
                     ->label('Facebook')
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->url(fn (?string $state): ?string => $state),
+                    ->url(fn(?string $state): ?string => $state),
                 Tables\Columns\ColorColumn::make('color_primary')
                     ->label('Cor Primária')
                     ->toggleable(),
@@ -273,47 +288,47 @@ class UserResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        
+
         // Se o usuário logado for 'user', só pode ver seu próprio registro
         if (auth()->user()->role === 'user') {
             $query->where('id', auth()->id());
         }
-        
+
         return $query;
     }
-    
+
     public static function canCreate(): bool
     {
         // Apenas admins e managers podem criar usuários
         return in_array(auth()->user()->role, ['admin', 'manager']);
     }
-    
+
     public static function canEdit($record): bool
     {
         // Admins e managers podem editar qualquer usuário
         if (in_array(auth()->user()->role, ['admin', 'manager'])) {
             return true;
         }
-        
+
         // Usuários 'user' só podem editar seu próprio registro
         if (auth()->user()->role === 'user') {
             return $record->id === auth()->id();
         }
-        
+
         return false;
     }
-    
+
     public static function canDelete($record): bool
     {
         // Apenas admins podem deletar usuários
         if (auth()->user()->role === 'admin') {
             return true;
         }
-        
+
         // Usuários não podem deletar nem mesmo seu próprio registro
         return false;
     }
-    
+
     public static function canDeleteAny(): bool
     {
         // Apenas admins podem fazer delete em massa

@@ -61,11 +61,11 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Nome')
                             ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('barcode')
-                            ->label('Código de Barras')
-                            ->maxLength(255)
-                            ->hidden(auth()->user()->role === 'user'),
+                            ->maxLength(100),
+                        // Forms\Components\TextInput::make('barcode')
+                        //     ->label('Código de Barras')
+                        //     ->maxLength(255)
+                        //     ->hidden(auth()->user()->role === 'user'),
                         Forms\Components\RichEditor::make('description')
                             ->label('Descrição')
                             ->maxLength(500)
