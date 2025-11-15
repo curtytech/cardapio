@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Widgets\UserViewsStats;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -38,7 +39,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                // Widgets removidos para manter dashboard limpo
+                \App\Filament\Widgets\UserViewsStats::class,
+                \App\Filament\Widgets\UsersLast30DaysChart::class,
             ])
             ->navigationItems([
                 NavigationItem::make('Ver Minha Página')

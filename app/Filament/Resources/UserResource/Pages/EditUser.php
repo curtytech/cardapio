@@ -14,6 +14,17 @@ class EditUser extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\Action::make('viewPage')
+                ->label('Ver Página')
+                ->icon('heroicon-o-eye')
+                ->url(fn () => route('menu.show', $this->record->slug))
+                ->openUrlInNewTab(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        // Após salvar, vai direto para a página pública do usuário
+        return route('menu.show', $this->record->slug);
     }
 }

@@ -70,7 +70,11 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('mercadopago_status')
                     ->label('Status')
                     ->badge()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'approved' => 'Aprovado',
+                        default => ucfirst($state),
+                    }),
                 Tables\Columns\TextColumn::make('data_pagamento')
                     ->label('Data do Pagamento')
                     ->dateTime('d/m/Y H:i')

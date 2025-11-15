@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\UserPageView;
+use Illuminate\Support\Carbon;
 
 class MenuController extends Controller
 {
@@ -26,6 +28,26 @@ class MenuController extends Controller
             })
             ->exists();
 
+        // Contador de acessos com proteção por sessão (anti-refresh 5 min)
+        $sessionKey = 'viewed_user_' . $user->id;
+        $now = Carbon::now();
+        $last = session($sessionKey) ? Carbon::parse(session($sessionKey)) : null;
+        $shouldCount = !$last || $last->diffInMinutes($now) >= 5;
+
+        if ($shouldCount) {
+            $view = UserPageView::firstOrCreate(
+                ['user_id' => $user->id],
+                ['slug' => $user->slug, 'views_count' => 0]
+            );
+            $view->increment('views_count');
+            $view->last_viewed_at = $now;
+            $view->save();
+
+            session([$sessionKey => $now->toISOString()]);
+        }
+
+        $viewsTotal = UserPageView::where('user_id', $user->id)->value('views_count') ?? 0;
+
         // Busca as categorias do usuário com seus produtos ativos
         $categories = Category::where('user_id', $user->id)
             ->where('is_active', true)
@@ -41,7 +63,7 @@ class MenuController extends Controller
             return $category->products->count() > 0;
         });
         
-        return view('menu.show', compact('user', 'categories', 'hasPayment'));
+        return view('menu.show', compact('user', 'categories', 'hasPayment', 'viewsTotal'));
     }
     
     /**
