@@ -82,21 +82,19 @@
 <body class="min-h-screen" style="background: linear-gradient(135deg, {{ $user->color_primary }}15 0%, {{ $user->color_secondary }}15 100%), linear-gradient(to bottom right, #f8fafc, #e2e8f0);">
     <!-- Header do Restaurante -->
     <header class="relative overflow-hidden">
-        <!-- Banner com Logo e Nome Sobrepostos -->
         @if($user->image_banner)
-        <div class="relative w-full h-64 md:h-80 lg:h-96">
+        <div class="relative w-full h-72 md:h-[380px] lg:h-[520px] xl:h-[620px]">
             <!-- Banner de Fundo -->
             <div class="absolute inset-0">
                 <img src="{{ Storage::url($user->image_banner) }}"
                     alt="Banner {{ $user->name }}"
-                    class="w-full h-full object-cover">
+                    class="w-full h-full object-cover object-center">
                 <!-- Overlay escuro para melhor legibilidade -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
             </div>
 
             <!-- Logo e Nome Sobrepostos -->
             <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-                <!-- Logo do Restaurante -->
                 @if($user->image_logo)
                 <div class="w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden border-4 border-white/40 shadow-2xl mb-4 floating-animation backdrop-blur-sm">
                     <img src="{{ Storage::url($user->image_logo) }}"
@@ -105,10 +103,8 @@
                 </div>
                 @endif
 
-                <!-- Nome do Restaurante -->
                 <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-2xl">{{ $user->name }}</h1>
 
-                <!-- Informações Básicas -->
                 @if($user->address || $user->city)
                 <p class="text-white/90 text-sm md:text-base font-medium drop-shadow-lg">
                     @if($user->city){{ $user->city }}@endif
