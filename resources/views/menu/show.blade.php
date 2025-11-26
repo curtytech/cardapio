@@ -137,7 +137,8 @@
                     <!-- Contato Principal -->
                     <div class="flex flex-wrap gap-3 justify-center text-sm">
 
-                        @if($user->id)
+                        @auth
+                        @if(Auth::user()->id == $user->id)
                         <div class="flex items-center bg-gray-100 rounded-full px-2 ">
                             <a href="{{{ url("admin/users/$user->id/edit") }}}"
                                 target="_blank"
@@ -146,8 +147,8 @@
                                 <span class="text-gray-700 font-medium">Editar Página</span>
                             </a>
                         </div>
-
                         @endif
+                        @endauth
 
                         @if($user->celphone)
                         <div class="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2">
@@ -390,13 +391,15 @@
 
     <!-- Botões Flutuantes de Redes Sociais (Ocultos no Mobile) -->
     <div class="hidden md:flex fixed bottom-6 right-6 flex-col gap-4 z-50">
-        @if($user->id)
+        @auth
+        @if(Auth::user()->id == $user->id)
         <a href="{{{ url("admin/users/$user->id/edit") }}}"
             target="_blank"
             class="group w-16 h-16 bg-gradient-to-b from-gray-500 to-gray-800 hover:from-gray-600 hover:to-gray-600 text-white rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-gray-500/25 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 backdrop-blur-lg border border-white/20">
             <i class="fas fa-gear text-2xl group-hover:scale-110 transition-transform duration-300"></i>
         </a>
         @endif
+        @endauth
 
         @if($user->whatsapp)
         <a href="https://wa.me/{{ $user->whatsapp }}"
