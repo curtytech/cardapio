@@ -47,11 +47,11 @@ class CategoryResource extends Resource
                             ->maxLength(50)
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (string $context, $state, Forms\Set $set) => $context === 'create' ? $set('slug', Str::slug($state)) : null),
-                        Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
-                            ->required()
-                            ->maxLength(50)
-                            ->unique(Category::class, 'slug', ignoreRecord: true),
+                        // Forms\Components\TextInput::make('slug')
+                        //     ->label('Slug')
+                        //     ->required()
+                        //     ->maxLength(50)
+                        //     ->unique(Category::class, 'slug', ignoreRecord: true),
                         Forms\Components\Textarea::make('description')
                             ->label('Descrição')
                             ->maxLength(500)
