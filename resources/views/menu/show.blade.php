@@ -257,11 +257,11 @@
 
         <!-- Categorias e Produtos -->
         @foreach($categories as $category)
-        <section id="categoria-{{ $category->slug }}" class="mb-8 animate-fade-in">
+        <section id="categoria-{{ $category->name }}" class="mb-8 animate-fade-in">
             <!-- Cabeçalho da Categoria (Clicável) -->
             <div class="bg-white/60 backdrop-blur-lg rounded-3xl p-8 shadow-xl border border-white/20 cursor-pointer hover:bg-white/70 transition-all duration-300 category-header"
-                onclick="toggleCategory('{{ $category->slug }}')"
-                data-category="{{ $category->slug }}">
+                onclick="toggleCategory('{{ $category->name }}')"
+                data-category="{{ $category->name }}">
                 <div class="flex items-center gap-6">
                     <div class="w-6 h-12 rounded-full shadow-lg" style="background: {{ $category->color ?? $user->color_primary }};"></div>
                     <div class="flex-1">
@@ -283,7 +283,7 @@
                             </div>
                         </div>
                         <!-- Ícone de Expansão/Colapso -->
-                        <div class="accordion-icon transition-transform duration-300" id="icon-{{ $category->slug }}">
+                        <div class="accordion-icon transition-transform duration-300" id="icon-{{ $category->name }}">
                             <i class="fas fa-chevron-down text-2xl" style="color: {{ $category->color ?? $user->color_primary }};"></i>
                         </div>
                     </div>
@@ -292,7 +292,7 @@
 
             <!-- Container de Produtos (Colapsável) -->
             <div class="category-content overflow-hidden transition-all duration-500 ease-in-out"
-                id="content-{{ $category->slug }}"
+                id="content-{{ $category->name }}"
                 style="max-height: 0; opacity: 0;">
                 <div class="pt-8">
                     <!-- Grid de Produtos -->
@@ -442,9 +442,9 @@
         });
 
         // Função para controlar o accordion das categorias
-        function toggleCategory(categorySlug) {
-            const content = document.getElementById(`content-${categorySlug}`);
-            const icon = document.getElementById(`icon-${categorySlug}`);
+        function toggleCategory(categoryName) {
+            const content = document.getElementById(`content-${categoryName}`);
+            const icon = document.getElementById(`icon-${categoryName}`);
             const chevron = icon.querySelector('i');
 
             if (content.style.maxHeight === '0px' || content.style.maxHeight === '') {
@@ -474,9 +474,9 @@
         });
 
         // Função para expandir categoria quando clicada no menu lateral
-        function expandCategoryFromMenu(categorySlug) {
-            const content = document.getElementById(`content-${categorySlug}`);
-            const icon = document.getElementById(`icon-${categorySlug}`);
+        function expandCategoryFromMenu(categoryName) {
+            const content = document.getElementById(`content-${categoryName}`);
+            const icon = document.getElementById(`icon-${categoryName}`);
             const chevron = icon.querySelector('i');
 
             if (content.style.maxHeight === '0px' || content.style.maxHeight === '') {
@@ -492,11 +492,11 @@
         document.querySelectorAll('a[href^="#categoria-"]').forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                const categorySlug = href.replace('#categoria-', '');
+                const categoryName = href.replace('#categoria-', '');
 
                 // Expandir a categoria
                 setTimeout(() => {
-                    expandCategoryFromMenu(categorySlug);
+                    expandCategoryFromMenu(categoryName);
                 }, 100);
             });
         });
