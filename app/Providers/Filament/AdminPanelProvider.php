@@ -39,8 +39,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\UserViewsStats::class,
                 \App\Filament\Widgets\UsersLast30DaysChart::class,
+                \App\Filament\Widgets\SalesPerDayChart::class,
+                \App\Filament\Widgets\UserViewsStats::class,
+                \App\Filament\Widgets\SalesOverview::class,
             ])
             ->navigationItems([
                 NavigationItem::make('Ver Minha Página')

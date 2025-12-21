@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class UsersLast30DaysChart extends ChartWidget
 {
-    protected static ?string $heading = 'Usuários nos últimos 30 dias';
+    protected static ?string $heading = 'Acessos nos últimos 30 dias';
 
     public static function canView(): bool
     {
-        return auth()->check() && auth()->user()?->role === 'admin';
+        return auth()->check() && auth()->user()?->role === 'user';
     }
 
     protected function getType(): string
