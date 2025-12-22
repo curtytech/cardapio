@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('quantity')->default(0);
             $table->timestamp('date')->nullable();
             $table->boolean('is_paid')->default(true);
+            $table->decimal('total', 10, 2)->default(0)->after('quantity');
             $table->timestamps();
         });
     }
