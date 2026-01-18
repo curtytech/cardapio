@@ -209,7 +209,13 @@ class SellResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with(['productQuantities.product']);
+        $query = parent::getEloquentQuery()->with(['productQuantities.product']);
+
+        if (auth()->user()?->role !== 'admin') {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query;
     }
 
     public static function getRelations(): array

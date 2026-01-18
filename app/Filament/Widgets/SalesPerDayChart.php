@@ -20,10 +20,10 @@ class SalesPerDayChart extends ChartWidget
         $start = now()->startOfMonth();
         $end = now()->endOfMonth();
 
-        // Manual query to group by date and sum revenue
         $results = Sell::query()
-            ->selectRaw('DATE(sells.date) as date, SUM(sells.quantity * products.sell_price) as aggregate')
-            ->join('products', 'sells.product_id', '=', 'products.id')
+            ->selectRaw('DATE(sells.date) as date, SUM(products_quantities.quantity * products.sell_price) as aggregate')
+            ->join('products_quantities', 'products_quantities.sell_id', '=', 'sells.id')
+            ->join('products', 'products_quantities.product_id', '=', 'products.id')
             ->where('sells.user_id', auth()->id())
             ->whereBetween('sells.date', [$start, $end])
             ->groupBy('date')
