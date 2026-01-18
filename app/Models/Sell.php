@@ -9,8 +9,6 @@ class Sell extends Model
 {
     protected $fillable = [
         'user_id',
-        'product_id',
-        'quantity',
         'date',
         'is_paid',
         'total',
@@ -21,6 +19,13 @@ class Sell extends Model
         'is_paid' => 'boolean',
     ];
 
+    public function getProductQuantityAttribute(): string
+    {
+        $name = $this->product?->name ?? '';
+
+        return $name . ' x ' . $this->quantity;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -29,5 +34,10 @@ class Sell extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+     public function productQuantities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductQuantity::class);
     }
 }

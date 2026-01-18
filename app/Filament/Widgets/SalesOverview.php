@@ -11,14 +11,16 @@ class SalesOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        $totalRevenue = Sell::join('products', 'sells.product_id', '=', 'products.id')
+        $totalRevenue = Sell::join('products_quantities', 'sells.id', '=', 'products_quantities.sell_id')
+            ->join('products', 'products_quantities.product_id', '=', 'products.id')
             ->where('sells.user_id', auth()->id())
-            ->sum(DB::raw('sells.quantity * products.sell_price'));
+            ->sum(DB::raw('products_quantities.quantity * products.sell_price'));
 
-        $todayRevenue = Sell::join('products', 'sells.product_id', '=', 'products.id')
+        $todayRevenue = Sell::join('products_quantities', 'sells.id', '=', 'products_quantities.sell_id')
+            ->join('products', 'products_quantities.product_id', '=', 'products.id')
             ->where('sells.user_id', auth()->id())
             ->whereDate('sells.date', today())
-            ->sum(DB::raw('sells.quantity * products.sell_price'));
+            ->sum(DB::raw('products_quantities.quantity * products.sell_price'));
 
         return [
             Stat::make('Total de Vendas', 'R$ ' . number_format($totalRevenue, 2, ',', '.'))

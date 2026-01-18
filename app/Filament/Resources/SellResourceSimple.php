@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SellResource\Pages;
+use App\Filament\Resources\SellResourceSimple\Pages;
 use App\Filament\Resources\SellResource\RelationManagers;
 use App\Models\Sell;
 use App\Models\Product;
@@ -18,14 +18,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SellResource extends Resource
+class SellResourceSimple extends Resource
 {
     protected static ?string $model = Sell::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-    protected static ?string $modelLabel = 'Venda';
-    protected static ?string $pluralModelLabel = 'Vendas';
-    protected static ?string $navigationLabel = 'Vendas';
+    // Slug único para este resource, evitando conflito com SellResource
+    protected static ?string $slug = 'vendas-simples';
+
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $modelLabel = 'Venda Simples';
+    protected static ?string $pluralModelLabel = 'Vendas Simples';
+    protected static ?string $navigationLabel = 'Vendas Simples';
 
     protected static ?string $navigationGroup = 'Gerenciamento de Vendas';
 
@@ -63,8 +66,8 @@ class SellResource extends Resource
                                             }
 
                                             return $qty > 0
-                                                ? $product->name . ' - R$ ' . number_format($product->sell_price, 2, ',', '.') . ' (' . $qty . ')'
-                                                : $product->name . ' - R$ ' . number_format($product->sell_price, 2, ',', '.');
+                                                ? $product->name . ' (' . $qty . ')'
+                                                : $product->name;
                                         })
                                         ->icon('heroicon-o-plus-circle')
                                         ->color('primary')
@@ -94,74 +97,40 @@ class SellResource extends Resource
                         )->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
-                Forms\Components\Section::make('productQuantities')
-                    ->extraAttributes(['class' => 'hidden'])
+                Forms\Components\Repeater::make('productQuantities')
+                    ->relationship()
                     ->schema([
-
-                        Forms\Components\Repeater::make('productQuantities')
-                            ->relationship()
-                            ->schema([
-                                Forms\Components\Select::make('product_id')
-                                    ->relationship(
-                                        name: 'product',
-                                        titleAttribute: 'name',
-                                        modifyQueryUsing: fn(Builder $query) => $query->where('user_id', auth()->id()),
-                                    )
-                                    ->label('Produto')
-                                    ->searchable()
-                                    ->preload()
-                                    ->required(),
-                                Forms\Components\TextInput::make('quantity')
-                                    ->label('Quantidade')
-                                    ->required()
-                                    ->numeric()
-                                    ->default(0),
-                            ])
-                            ->columns(2)
-                            ->columnSpanFull()
-                            ->defaultItems(0)
-                            ->addable(false)
-                            ->extraAttributes(['class' => 'hidden']),
-                    ]),
-                Forms\Components\Grid::make(3)
-                    ->schema([
-                        Forms\Components\Placeholder::make('total_value')
-                            ->label('Valor Total')
-                            ->content(function (Get $get) {
-                                $items = $get('productQuantities') ?? [];
-                                if (empty($items)) {
-                                    return 'R$ 0,00';
-                                }
-
-                                $productIds = collect($items)->pluck('product_id')->filter();
-                                if ($productIds->isEmpty()) {
-                                    return 'R$ 0,00';
-                                }
-
-                                $products = Product::whereIn('id', $productIds)->pluck('sell_price', 'id');
-
-                                $total = 0;
-                                foreach ($items as $item) {
-                                    $pid = $item['product_id'] ?? null;
-                                    $qty = (int) ($item['quantity'] ?? 0);
-                                    $price = $products->get($pid) ?? 0;
-                                    $total += $qty * $price;
-                                }
-
-                                return 'R$ ' . number_format($total, 2, ',', '.');
-                            }),
-                        Forms\Components\DateTimePicker::make('date')
-                            ->label('Data')
-                            ->default(now()),
-                        Forms\Components\Toggle::make('is_paid')
-                            ->label('Pago?')
-                            ->default(true)
+                        Forms\Components\Select::make('product_id')
+                            ->relationship(
+                                name: 'product',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn(Builder $query) => $query->where('user_id', auth()->id()),
+                            )
+                            ->label('Produto')
+                            ->searchable()
+                            ->preload()
                             ->required(),
-                    ]),
+                        Forms\Components\TextInput::make('quantity')
+                            ->label('Quantidade')
+                            ->required()
+                            ->numeric()
+                            ->default(0),
+                    ])
+                    ->columns(2)
+                    ->defaultItems(0)
+                    ->addable(false)
+                    ->columnSpanFull(),
+                Forms\Components\DateTimePicker::make('date')
+                    ->label('Data')
+                    ->default(now()),
+                Forms\Components\Toggle::make('is_paid')
+                    ->label('Pago?')
+                    ->default(true)
+                    ->required(),
             ]);
     }
 
-    public static function table(Table $table): Table
+     public static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -207,6 +176,7 @@ class SellResource extends Resource
             ]);
     }
 
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['productQuantities.product']);
@@ -222,9 +192,9 @@ class SellResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSells::route('/'),
-            'create' => Pages\CreateSell::route('/create'),
-            'edit' => Pages\EditSell::route('/{record}/edit'),
+            'index' => Pages\ListSellSimple::route('/'),
+            'create' => Pages\CreateSellSimple::route('/create'),
+            'edit' => Pages\EditSellSimple::route('/{record}/edit'),
         ];
     }
 }

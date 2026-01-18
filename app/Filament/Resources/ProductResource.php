@@ -69,7 +69,8 @@ class ProductResource extends Resource
                         Forms\Components\RichEditor::make('description')
                             ->label('Descrição')
                             ->maxLength(500)
-                            ->columnSpan('full'),
+                            ->columnSpan('full')
+                            ->required(),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Preço e Status')
