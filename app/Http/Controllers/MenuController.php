@@ -15,7 +15,7 @@ class MenuController extends Controller
     /**
      * Exibe o cardápio de um usuário específico baseado no slug.
      */
-    public function show(string $slug)
+    public function show(string $slug, string $mesa)
     {
         // Busca o usuário pelo slug
         $user = User::where('slug', $slug)->firstOrFail();

@@ -213,6 +213,18 @@ class UserResource extends Resource
                     ->label('E-mail')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('slug')
+                    ->label('Slug')
+                    ->action(
+                        Tables\Actions\Action::make('openSlug')
+                            ->label('Abrir página')
+                            ->icon('heroicon-o-arrow-top-right-on-square')
+                            ->color('primary')
+                            ->url(fn($record) => url($record->slug))
+                            ->openUrlInNewTab()
+                    )
+                    ->formatStateUsing(fn($state) => $state ?: '-'),
+
                 Tables\Columns\TextColumn::make('role')
                     ->label('Função')
                     ->badge()

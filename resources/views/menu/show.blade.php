@@ -243,13 +243,14 @@
                 <h2 class="text-xl md:text-2xl font-bold text-gray-800 text-center mb-6">Categorias</h2>
                 <div class="flex flex-wrap gap-3 justify-center">
                     @foreach($categories as $category)
-                    <span
+                    <a
+                        href="#cat-{{$category->id }}"
                         class="group inline-flex items-center px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg card-hover"
                         style="background: color: {{ $category->color ?? $user->color_primary }}; border: 2px solid {{ $category->color }}60;">
                         <i class="fas fa-utensils mr-2 group-hover:rotate-12 transition-transform duration-300" style="color: {{ $category->color ?? $user->color_primary }};"></i>
                         {{ $category->name }}
                         <span class="ml-3 bg-white/90 text-gray-700 rounded-full px-3 py-1 text-xs font-bold shadow-sm">{{ $category->products->count() }}</span>
-                    </span>
+                    </a>
                     @endforeach
                 </div>
             </div>
@@ -294,7 +295,7 @@
             <div class="category-content overflow-hidden transition-all duration-500 ease-in-out"
                 id="content-{{ $category->name }}"
                 style="max-height: 0; opacity: 0;">
-                <div class="pt-8">
+                <div class="pt-8" id="cat-{{$category->id }}">
                     <!-- Grid de Produtos -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         @foreach($category->products as $product)
@@ -317,7 +318,6 @@
                                         <span class="text-xl md:text-2xl font-bold ml-2" style="color: {{ $category->color ?? $user->color_primary }};">{{ $product->formatted_price }}</span>
                                     </div>
                                 </div>
-
                                 <!-- Descrição -->
                                 @if($product->description)
                                 <p class="text-gray-600 text-sm mb-4 leading-relaxed">{!! !empty($product->description) ? $product->description : '' !!} </p>
@@ -334,6 +334,18 @@
                                     @endforeach
                                 </div>
                                 @endif
+
+                                <div class="flex flex justify-end gap-2 mb-4  ">
+                                    <button onclick="addToCart({
+                                        id: '{{ $product->id }}',
+                                        name: '{{ addslashes($product->name) }}',
+                                        price: '{{ $product->formatted_price }}',
+                                        image: '{{ $product->image }}'
+                                    })"
+                                        class="inline-block px-4 py-2 rounded-full border bg-gradient-to-r from-green-400 to-green-500 text-white text-base font-bold cursor-pointer hover:shadow-lg transition-all transform hover:scale-105 active:scale-95">
+                                        Comprar
+                                    </button>
+                                </div>
 
                             </div>
                         </div>
@@ -502,8 +514,188 @@
         });
     </script>
 
+    <!-- Cart Floating Button -->
+    <div id="cart-floating-btn" class="fixed bottom-6 left-6 z-50 cursor-pointer animate-bounce" onclick="toggleCartModal()">
+        <div class="bg-red-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-red-700 transition-all transform hover:scale-110 border-2 border-white">
+            <div class="relative">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">0</span>
+            </div>
+            <span id="cart-total" class="font-bold hidden sm:inline">R$ 0,00</span>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="toggleCartModal()"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto pointer-events-none">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg pointer-events-auto">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="flex justify-between items-center mb-6 border-b pb-4">
+                            <h3 class="text-xl font-bold leading-6 text-gray-900 flex items-center gap-2" id="modal-title">
+                                <i class="fas fa-shopping-bag text-red-500"></i> Seu Carrinho
+                            </h3>
+                            <button onclick="toggleCartModal()" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div id="cart-items" class="mt-4 space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                            <!-- Items will be injected here -->
+                        </div>
+
+                        <div class="mt-4 space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                            <textarea id="observation" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none " rows="2" placeholder="Adicione uma observação ao pedido..."></textarea>
+                        </div>
+
+                        <div class="mt-6 border-t pt-4 bg-gray-50 -mx-6 -mb-4 p-6">
+                            <div class="flex justify-between items-center text-lg font-bold text-gray-900 mb-4">
+                                <span>Total do Pedido</span>
+                                <span id="cart-modal-total" class="text-2xl text-green-600">R$ 0,00</span>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button type="button" class="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-green-600 px-3 py-3 text-base font-bold text-white shadow-lg hover:bg-green-500 hover:shadow-green-500/30 transition-all sm:w-auto sm:flex-1" onclick="finalizeOrder()">
+                                    <i class="fab fa-whatsapp text-xl"></i> Finalizar Pedido
+                                </button>
+                                <button type="button" class="inline-flex w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto" onclick="toggleCartModal()">
+                                    Continuar Comprando
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('js/cart.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cart manager
+            window.cartManager = new CartManager();
+        });
+
+        // UI Logic for Cart
+        function addToCart(product) {
+            window.cartManager.addItem(product);
+            console.log('product', product);
+            // Visual feedback on button
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-check"></i> Adicionado';
+            btn.classList.remove('from-green-400', 'to-green-500');
+            btn.classList.add('bg-green-700');
+
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.classList.add('from-green-400', 'to-green-500');
+                btn.classList.remove('bg-green-700');
+            }, 1000);
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cart-modal');
+            const isHidden = modal.classList.contains('hidden');
+            const total = window.cartManager.getTotal();
+            document.getElementById('cart-modal-total').textContent = window.cartManager.formatMoney(total);
+
+            if (isHidden) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                renderCartItems();
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function renderCartItems() {
+            const items = window.cartManager.getItems();
+            const container = document.getElementById('cart-items');
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shopping-basket text-3xl text-gray-300"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">Seu carrinho está vazio</p>
+                        <p class="text-sm text-gray-400 mt-1">Adicione itens deliciosos para começar!</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(item => `
+                <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 flex-1">
+                        ${item.image ? 
+                            `<img src="/storage/${item.image}" class="w-16 h-16 object-cover rounded-lg shadow-sm">` : 
+                            `<div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center"><i class="fas fa-utensils text-gray-400"></i></div>`
+                        }
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-gray-900 truncate">${item.name}</h4>
+                            <p class="text-green-600 font-semibold">${window.cartManager.formatMoney(item.price)}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-end gap-2 ml-4">
+                        <button onclick="window.cartManager.removeItem('${item.id}')" class="text-gray-400 hover:text-red-500 transition-colors text-xs uppercase font-bold tracking-wider">
+                            Remover
+                        </button>
+                        <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                            <button onclick="window.cartManager.updateQuantity('${item.id}', ${item.quantity - 1})" class="w-8 h-8 rounded-md bg-white text-gray-600 shadow-sm hover:bg-gray-50 font-bold transition-all disabled:opacity-50">-</button>
+                            <span class="font-bold w-10 text-center text-gray-800">${item.quantity}</span>
+                            <button onclick="window.cartManager.updateQuantity('${item.id}', ${item.quantity + 1})" class="w-8 h-8 rounded-md bg-white text-green-600 shadow-sm hover:bg-gray-50 font-bold transition-all">+</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function finalizeOrder() {
+            // Placeholder for future implementation
+            alert('Funcionalidade de finalizar pedido será implementada em breve!');
+        }
+
+        // Listen for cart updates
+        window.addEventListener('cart-updated', (e) => {
+            const items = e.detail;
+            const count = window.cartManager.getCount();
+            const total = window.cartManager.getTotal();
+
+            // Update Floating Button
+            const floatingBtn = document.getElementById('cart-floating-btn');
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('cart-total').innerText = window.cartManager.formatMoney(total);
+            document.getElementById('cart-modal-total').innerText = window.cartManager.formatMoney(total);
+
+            if (count > 0) {
+                // floatingBtn.classList.remove('hidden');
+                floatingBtn.classList.add('flex');
+            } else {
+                // floatingBtn.classList.add('hidden');
+                floatingBtn.classList.remove('flex');
+
+                // Close modal if it was open and now empty? 
+                // Let's keep it open so user sees "empty" state, unless they removed the last item explicitly.
+            }
+
+            // If modal is open, re-render
+            const modal = document.getElementById('cart-modal');
+            if (!modal.classList.contains('hidden')) {
+                renderCartItems();
+            }
+        });
+    </script>
+
     <!-- Loader Script -->
-    <script src="{{ asset('js/loader.js') }}"></script>
+    <!-- <script src="{{ asset('js/loader.js') }}"></script> -->
+
+    <script src="{{ asset('js/cart.js') }}"></script>
 
 </body>
 
