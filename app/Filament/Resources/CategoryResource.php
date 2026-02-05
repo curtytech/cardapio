@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
+
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
@@ -26,6 +27,9 @@ class CategoryResource extends Resource
     protected static ?string $modelLabel = 'Categoria';
     
     protected static ?string $pluralModelLabel = 'Categorias';
+
+    protected static ?string $navigationGroup = 'Gerenciamento do Restaurante';
+
 
     public static function form(Form $form): Form
     {
@@ -46,12 +50,7 @@ class CategoryResource extends Resource
                             ->required()
                             ->maxLength(50)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn (string $context, $state, Forms\Set $set) => $context === 'create' ? $set('slug', Str::slug($state)) : null),
-                        // Forms\Components\TextInput::make('slug')
-                        //     ->label('Slug')
-                        //     ->required()
-                        //     ->maxLength(50)
-                        //     ->unique(Category::class, 'slug', ignoreRecord: true),
+                            ->afterStateUpdated(fn (string $context, $state, Forms\Set $set) => $context === 'create' ? $set('slug', Str::slug($state)) : null),                      
                         Forms\Components\Textarea::make('description')
                             ->label('Descrição')
                             ->maxLength(500)

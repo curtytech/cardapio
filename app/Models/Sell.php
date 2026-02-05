@@ -9,8 +9,12 @@ class Sell extends Model
 {
     protected $fillable = [
         'user_id',
+        'table_id',
+        'client_name',
         'date',
+        'observation',
         'is_paid',
+        'is_finished',
         'total',
     ];
 

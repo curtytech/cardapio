@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('sells', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            // $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            // $table->integer('quantity')->default(0);
+            $table->foreignId('table_id')->constrained('restaurant_tables')->onDelete('cascade');
+            $table->string('client_name')->nullable();
             $table->timestamp('date')->nullable();
             $table->string('observation')->nullable();
-            $table->boolean('is_paid')->default(true);
+            $table->boolean('is_paid')->default(false);
             $table->boolean('is_finished')->default(false);
             $table->decimal('total', 10, 2)->default(0)->after('quantity');
             $table->timestamps();

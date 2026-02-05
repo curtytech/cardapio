@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MercadoPagoController;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\SellController;
 
 // Webhook do MercadoPago - SEM CSRF
 Route::post('/webhook/mercadopago', [MercadoPagoController::class, 'webhook'])
@@ -28,3 +29,6 @@ Route::post('/test-webhook', function () {
         'route_type' => 'API - SEM CSRF'
     ]);
 })->name('test.webhook.api');
+
+Route::post('/client-buys', [SellController::class, 'clientBuys'])
+    ->name('client.buys');

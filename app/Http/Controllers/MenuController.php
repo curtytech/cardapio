@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use App\Models\RestaurantTable;
 use App\Models\UserPageView;
 use Illuminate\Support\Carbon;
 
@@ -15,7 +16,7 @@ class MenuController extends Controller
     /**
      * Exibe o cardápio de um usuário específico baseado no slug.
      */
-    public function show(string $slug, string $mesa)
+    public function show(string $slug, ?string $mesa = null)
     {
         // Busca o usuário pelo slug
         $user = User::where('slug', $slug)->firstOrFail();
@@ -62,8 +63,12 @@ class MenuController extends Controller
         $categories = $categories->filter(function ($category) {
             return $category->products->count() > 0;
         });
+
+        $restaurantTables = RestaurantTable::where('user_id', $user->id)
+            ->orderBy('number')
+            ->get();
         
-        return view('menu.show', compact('user', 'categories', 'hasPayment', 'viewsTotal'));
+        return view('menu.show', compact('user', 'categories', 'restaurantTables', 'hasPayment', 'viewsTotal'));
     }
     
     /**

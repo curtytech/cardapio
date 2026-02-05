@@ -9,74 +9,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="{{ asset('css/loader.css') }}" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
+    <link href="{{ asset('css/show.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .gradient-bg {
-            background: linear-gradient(135deg, {
-                    {
-                    $user->color_primary ?? '#667eea'
-                }
-            }
-
-            0%, {
-                {
-                $user->color_secondary ?? '#764ba2'
-            }
-        }
-
-        100%);
-        }
-
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .floating-animation {
-            animation: floating 3s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-    </style>
 </head>
 
 <body class="min-h-screen" style="background: linear-gradient(135deg, {{ $user->color_primary }}15 0%, {{ $user->color_secondary }}15 100%), linear-gradient(to bottom right, #f8fafc, #e2e8f0);">
@@ -335,7 +272,7 @@
                                 </div>
                                 @endif
 
-                                <div class="flex flex justify-end gap-2 mb-4  ">
+                                <div class="flex flex justify-end gap-2   ">
                                     <button onclick="addToCart({
                                         id: '{{ $product->id }}',
                                         name: '{{ addslashes($product->name) }}',
@@ -550,6 +487,20 @@
                             <textarea id="observation" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none " rows="2" placeholder="Adicione uma observação ao pedido..."></textarea>
                         </div>
 
+                        <div class="mt-4 space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar w-full">
+                            <input id="client_name" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Seu nome">
+
+                            <select id="table_id" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Selecione sua mesa</option>
+                                @foreach($restaurantTables as $table)
+                                <option value="{{ $table->id }}" @selected(request()->route('table') == $table->id)>
+                                    Mesa {{ $table->number }}
+                                </option>
+                                @endforeach
+                            </select>
+
+                        </div>
+
                         <div class="mt-6 border-t pt-4 bg-gray-50 -mx-6 -mb-4 p-6">
                             <div class="flex justify-between items-center text-lg font-bold text-gray-900 mb-4">
                                 <span>Total do Pedido</span>
@@ -557,11 +508,12 @@
                             </div>
 
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <button type="button" class="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-green-600 px-3 py-3 text-base font-bold text-white shadow-lg hover:bg-green-500 hover:shadow-green-500/30 transition-all sm:w-auto sm:flex-1" onclick="finalizeOrder()">
-                                    <i class="fab fa-whatsapp text-xl"></i> Finalizar Pedido
-                                </button>
+
                                 <button type="button" class="inline-flex w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto" onclick="toggleCartModal()">
                                     Continuar Comprando
+                                </button>
+                                <button type="button" class="inline-flex w-full justify-center items-center gap-2 rounded-xl bg-green-600 px-3 py-3 text-base font-bold text-white shadow-lg hover:bg-green-500 hover:shadow-green-500/30 transition-all sm:w-auto sm:flex-1" onclick="finalizeOrder()">
+                                    Finalizar Pedido
                                 </button>
                             </div>
                         </div>
@@ -657,8 +609,74 @@
         }
 
         function finalizeOrder() {
-            // Placeholder for future implementation
-            alert('Funcionalidade de finalizar pedido será implementada em breve!');
+            // alert('Funcionalidade de finalizar pedido será implementada em breve!');
+            const orderData = {
+                cart: window.cartManager.getItems(),
+                total: window.cartManager.getTotal(),
+                table_id: Number(document.getElementById('table_id').value),
+                client_name: document.getElementById('client_name').value,
+                observation: document.getElementById('observation').value
+            };
+
+            if (!orderData.table_id) {
+                showNotification('Por favor, selecione sua mesa.', 'error');    
+                return;
+            }
+
+            if (orderData.total === 0 || !orderData.cart.length) {
+                showNotification('Carrinho vazio! Adicione itens antes de finalizar.', 'error');    
+                return;
+            }
+
+            if (!orderData.client_name || orderData.client_name.trim() === '') {
+                showNotification('Por favor, insira seu nome.', 'error');    
+                return;
+            }
+
+            // Show loading state
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+
+            fetch("{{ route('client.buys') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                    },
+                    body: JSON.stringify(orderData),
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || data.message || 'Erro ao processar pedido');
+                    }
+                    return data;
+                })
+                .then(data => {
+                    if (data.success) {
+                        showNotification(data.message, 'success');
+                        window.cartManager.clear();
+                        toggleCartModal();
+                        if (data.url) {
+                            window.location.href = data.url;
+                        }
+                    } else {
+                        showNotification(data.error || 'Erro desconhecido', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    showNotification(error.message || 'Ocorreu um erro. Por favor, tente novamente.', 'error');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                });
+            
+            console.log(orderData);
         }
 
         // Listen for cart updates
@@ -697,6 +715,38 @@
 
     <script src="{{ asset('js/cart.js') }}"></script>
 
+    <script>
+        function showNotification(message, type = 'info') {
+            const config = {
+                title: message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            };
+
+            switch (type) {
+                case 'success':
+                    config.icon = 'success';
+                    break;
+                case 'error':
+                    config.icon = 'error';
+                    break;
+                case 'warning':
+                    config.icon = 'warning';
+                    break;
+                default:
+                    config.icon = 'info';
+            }
+
+            Swal.fire(config);
+        }
+    </script>
 </body>
 
 </html>
