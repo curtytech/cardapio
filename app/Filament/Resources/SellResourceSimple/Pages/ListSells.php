@@ -10,10 +10,16 @@ class ListSellSimple extends ListRecords
 {
     protected static string $resource = SellResourceSimple::class;
 
+    public function getBreadcrumb(): string
+    {
+        return 'Lista';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nova Venda'),
         ];
     }
 }

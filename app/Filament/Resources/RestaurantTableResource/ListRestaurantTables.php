@@ -10,10 +10,18 @@ class ListRestaurantTables extends ListRecords
 {
     protected static string $resource = RestaurantTableResource::class;
 
+    protected static ?string $title = 'Mesas';
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lista';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nova Mesa'),
         ];
     }
 }

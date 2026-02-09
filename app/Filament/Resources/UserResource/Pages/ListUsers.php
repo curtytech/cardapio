@@ -10,10 +10,18 @@ class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
 
+    protected static ?string $title = 'Restaurantes';
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lista';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Novo Restaurante'),
         ];
     }
 }
