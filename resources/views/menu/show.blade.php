@@ -265,7 +265,7 @@
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     @foreach($product->features as $feature)
                                     <span class="inline-block text-xs px-3 py-1 rounded-full font-medium border"
-                                        style="color: {{ $category->color ?? $user->color_primary }}; border-color: {{ $category->color ?? $user->color_primary }}60;">
+                                        style="color: <?= $category->color ?? $user->color_primary ?>; border-color: <?= $category->color ?? $user->color_primary ?>60;">
                                         {{ $feature }}
                                     </span>
                                     @endforeach
@@ -451,6 +451,16 @@
         });
     </script>
 
+    <!-- Order Floating Button -->  
+    <div id="order-floating-btn" class="fixed left-6 z-50 cursor-pointer animate-bounce" style="bottom: 110px;" onclick="toggleOrderModal()">
+        <div class="bg-green-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-green-700 transition-all transform hover:scale-110 border-2 border-white">
+            <div class="relative">
+                <i class="fa-solid fa-basket-shopping text-xl"></i>
+                <span id="order-count" class="absolute -top-2 -right-2 bg-white text-green-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">0</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Cart Floating Button -->
     <div id="cart-floating-btn" class="fixed bottom-6 left-6 z-50 cursor-pointer animate-bounce" onclick="toggleCartModal()">
         <div class="bg-red-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-red-700 transition-all transform hover:scale-110 border-2 border-white">
@@ -461,6 +471,7 @@
             <span id="cart-total" class="font-bold hidden sm:inline">R$ 0,00</span>
         </div>
     </div>
+
 
     <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -614,6 +625,7 @@
                 cart: window.cartManager.getItems(),
                 total: window.cartManager.getTotal(),
                 table_id: Number(document.getElementById('table_id').value),
+                user_id: <?= $user->id ?>,
                 client_name: document.getElementById('client_name').value,
                 observation: document.getElementById('observation').value
             };

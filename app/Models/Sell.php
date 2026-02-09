@@ -23,7 +23,7 @@ class Sell extends Model
         'is_paid' => 'boolean',
     ];
 
-    public function getProductQuantityAttribute(): string
+    public function getSellProductGroupAttribute(): string
     {
         $name = $this->product?->name ?? '';
 
@@ -40,8 +40,8 @@ class Sell extends Model
         return $this->belongsTo(Product::class);
     }
 
-     public function productQuantities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function sellProductsGroups(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(ProductQuantity::class);
+        return $this->hasMany(SellProductGroup::class);
     }
 }

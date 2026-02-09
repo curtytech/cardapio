@@ -19,10 +19,11 @@ class SellController extends Controller
             'cart' => 'required|array|min:1',
             'total' => 'required|numeric',
             'table_id' => 'required|exists:restaurant_tables,id',
-            'observation' => 'nullable|string'
+            'observation' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
         ]);
 
-        dump($request->all());
+        // dump($request->all());
         // die;
 
         try {
@@ -32,10 +33,11 @@ class SellController extends Controller
             $total = $request->input('total');
             $tableId = $request->input('table_id');
             $observation = $request->input('observation');
-            
+            $userId = $request->input('user_id');
+            $userId = intVal($userId);
             // Cria a venda
             $sell = \App\Models\Sell::create([
-                'user_id' => auth()->id() ?? 1, // Fallback para user 1 se não autenticado (ajustar conforme lógica de negócio)
+                'user_id' => $userId, // Fallback para user 1 se não autenticado (ajustar conforme lógica de negócio)
                 'table_id' => $tableId,
                 'client_name' => 'Cliente Mesa ' . $tableId, // Pode ser melhorado se tiver input de nome
                 'date' => now(),
@@ -47,7 +49,7 @@ class SellController extends Controller
 
             // Salva os itens do carrinho
             foreach ($cart as $item) {
-                \App\Models\ProductQuantity::create([
+                \App\Models\SellProductGroup::create([
                     'sell_id' => $sell->id,
                     'product_id' => $item['id'],
                     'quantity' => $item['quantity']
@@ -58,18 +60,16 @@ class SellController extends Controller
 
             // Retorna URL de redirecionamento ou sucesso
             // Se tiver integração com pagamento, aqui geraria a preference
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Pedido realizado com sucesso!',
                 // 'url' => route('payment.checkout', $sell->id) // Exemplo se tiver pagamento
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Erro ao processar venda: ' . $e->getMessage());
             return response()->json(['error' => 'Erro ao processar pedido: ' . $e->getMessage()], 500);
         }
     }
-
 }

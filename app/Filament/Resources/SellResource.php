@@ -52,7 +52,7 @@ class SellResource extends Resource
                                 ->map(function (Product $product) {
                                     return Action::make('add_product_' . $product->id)
                                         ->label(function (Get $get) use ($product) {
-                                            $items = $get('productQuantities') ?? [];
+                                            $items = $get('') ?? [];
                                             $qty = 0;
 
                                             foreach ($items as $item) {
@@ -70,7 +70,7 @@ class SellResource extends Resource
                                         ->color('primary')
                                         ->button()
                                         ->action(function (Set $set, Get $get) use ($product) {
-                                            $items = $get('productQuantities') ?? [];
+                                            $items = $get('sellProductsGroups') ?? [];
                                             $found = false;
                                             foreach ($items as $index => $item) {
                                                 if (($item['product_id'] ?? null) === $product->id) {
@@ -87,18 +87,18 @@ class SellResource extends Resource
                                                 ];
                                             }
 
-                                            $set('productQuantities', $items);
+                                            $set('sellProductsGroups', $items);
                                         });
                                 })
                                 ->all()
                         )->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
-                Forms\Components\Section::make('productQuantities')
+                Forms\Components\Section::make('sellProductsGroups')
                     ->extraAttributes(['class' => 'hidden'])
                     ->schema([
 
-                        Forms\Components\Repeater::make('productQuantities')
+                        Forms\Components\Repeater::make('sellProductsGroups')
                             ->relationship()
                             ->schema([
                                 Forms\Components\Select::make('product_id')
@@ -128,7 +128,7 @@ class SellResource extends Resource
                         Forms\Components\Placeholder::make('total_value')
                             ->label('Valor Total')
                             ->content(function (Get $get) {
-                                $items = $get('productQuantities') ?? [];
+                                $items = $get('sellProductsGroups') ?? [];
                                 if (empty($items)) {
                                     return 'R$ 0,00';
                                 }
@@ -150,11 +150,31 @@ class SellResource extends Resource
 
                                 return 'R$ ' . number_format($total, 2, ',', '.');
                             }),
+                        // Forms\Components\Select::make('table_id')
+                        //     ->label('Mesa')
+                        //     ->relationship('table', 'number', function ($query) {
+                        //         // Se o usuário logado for 'user', só pode ver suas próprias mesas
+                        //         if (auth()->user()->role === 'user') {
+                        //             $query->where('user_id', auth()->id());
+                        //         }
+                        //     })
+                        //     ->searchable()
+                        //     ->preload()
+                        //     ->required(),
+
+                        Forms\Components\TextInput::make('client_name')
+                            ->label('Nome do Cliente')
+                            ->required()
+                            ->maxLength(100),
                         Forms\Components\DateTimePicker::make('date')
                             ->label('Data')
                             ->default(now()),
                         Forms\Components\Toggle::make('is_paid')
                             ->label('Pago?')
+                            ->default(true)
+                            ->required(),
+                        Forms\Components\Toggle::make('is_finished')
+                            ->label('Finalizado?')
                             ->default(true)
                             ->required(),
                     ]),
@@ -172,7 +192,7 @@ class SellResource extends Resource
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
                     ->state(function (Sell $record): float {
-                        return $record->productQuantities->sum(function ($pq) {
+                        return $record->sellProductsGroups->sum(function ($pq) {
                             return $pq->quantity * ($pq->product->sell_price ?? 0);
                         });
                     })
@@ -209,7 +229,7 @@ class SellResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['productQuantities.product']);
+        $query = parent::getEloquentQuery()->with(['sellProductsGroups.product']);
 
         if (auth()->user()?->role !== 'admin') {
             $query->where('user_id', auth()->id());

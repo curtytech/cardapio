@@ -55,7 +55,7 @@ class SellResourceSimple extends Resource
                                 ->map(function (Product $product) {
                                     return Action::make('add_product_' . $product->id)
                                         ->label(function (Get $get) use ($product) {
-                                            $items = $get('productQuantities') ?? [];
+                                            $items = $get('sellProductsGroups') ?? [];
                                             $qty = 0;
 
                                             foreach ($items as $item) {
@@ -73,7 +73,7 @@ class SellResourceSimple extends Resource
                                         ->color('primary')
                                         ->button()
                                         ->action(function (Set $set, Get $get) use ($product) {
-                                            $items = $get('productQuantities') ?? [];
+                                            $items = $get('sellProductsGroups') ?? [];
                                             $found = false;
                                             foreach ($items as $index => $item) {
                                                 if (($item['product_id'] ?? null) === $product->id) {
@@ -90,14 +90,14 @@ class SellResourceSimple extends Resource
                                                 ];
                                             }
 
-                                            $set('productQuantities', $items);
+                                            $set('sellProductsGroups', $items); 
                                         });
                                 })
                                 ->all()
                         )->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
-                Forms\Components\Repeater::make('productQuantities')
+                Forms\Components\Repeater::make('sellProductsGroups')
                     ->relationship()
                     ->schema([
                         Forms\Components\Select::make('product_id')
@@ -141,7 +141,7 @@ class SellResourceSimple extends Resource
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
                     ->state(function (Sell $record): float {
-                        return $record->productQuantities->sum(function ($pq) {
+                        return $record->sellProductsGroups->sum(function ($pq) {
                             return $pq->quantity * ($pq->product->sell_price ?? 0);
                         });
                     })
@@ -178,7 +178,7 @@ class SellResourceSimple extends Resource
 
      public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['productQuantities.product']);
+        $query = parent::getEloquentQuery()->with(['sellProductsGroups.product']);
 
         if (auth()->user()?->role !== 'admin') {
             $query->where('user_id', auth()->id());
