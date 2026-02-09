@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sell extends Model
 {
@@ -21,27 +22,27 @@ class Sell extends Model
     protected $casts = [
         'date' => 'datetime',
         'is_paid' => 'boolean',
+        'is_finished' => 'boolean',
     ];
-
-    public function getSellProductGroupAttribute(): string
-    {
-        $name = $this->product?->name ?? '';
-
-        return $name . ' x ' . $this->quantity;
-    }
+   protected $appends = ['mesa_label'];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function product(): BelongsTo
+    public function table(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(RestaurantTable::class, 'table_id');
     }
 
-    public function sellProductsGroups(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function sellProductsGroups(): HasMany
     {
         return $this->hasMany(SellProductGroup::class);
     }
+
+    public function getMesaLabelAttribute(): ?string
+{
+    return $this->table?->number;
+}
 }

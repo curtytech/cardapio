@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Payment;
-use GuzzleHttp\Promise\Create;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 
 class SellController extends Controller
 {
     public function clientBuys(Request $request)
     {
         // Validação básica
-        $request->validate([
+       $request->validate([
             'cart' => 'required|array|min:1',
             'total' => 'required|numeric',
             'table_id' => 'required|exists:restaurant_tables,id',
+            'client_name' => 'required|string|max:255',
             'observation' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
         ]);
@@ -32,14 +30,14 @@ class SellController extends Controller
             $cart = $request->input('cart');
             $total = $request->input('total');
             $tableId = $request->input('table_id');
+            $clientName = $request->input('client_name');
             $observation = $request->input('observation');
-            $userId = $request->input('user_id');
-            $userId = intVal($userId);
+            $userId = (int) $request->input('user_id');
             // Cria a venda
             $sell = \App\Models\Sell::create([
-                'user_id' => $userId, // Fallback para user 1 se não autenticado (ajustar conforme lógica de negócio)
+                'user_id' => $userId, 
                 'table_id' => $tableId,
-                'client_name' => 'Cliente Mesa ' . $tableId, // Pode ser melhorado se tiver input de nome
+                'client_name' => $clientName,
                 'date' => now(),
                 'observation' => $observation,
                 'is_paid' => false,

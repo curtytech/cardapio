@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MercadoPagoController;
+use App\Http\Controllers\DashboardController;
+
 
 // Página inicial
 Route::get('/', function () {
@@ -39,3 +41,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/{slug}/{table?}', [MenuController::class, 'show'])->name('menu.show');
 // Rota para exibir produtos de uma categoria específica do usuário
 // Route::get('/menu/{userSlug}/{categorySlug}', [MenuController::class, 'category'])->name('menu.category');
+
+Route::middleware('auth')->get('/dashboard', [DashboardController::class, 'index'])
+    ->name('dashboard');
