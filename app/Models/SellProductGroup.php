@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ProductQuantity extends Model
+class SellProductGroup extends Model
 {
-    protected $table = 'products_quantities';
+    protected $table = 'sell_products_groups';
 
     public $timestamps = false;
 
