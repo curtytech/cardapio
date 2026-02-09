@@ -15,11 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('table_id')->constrained('restaurant_tables')->onDelete('cascade');
+            $table->ipAddress('ip')->default('0.0.0.0');
             $table->string('client_name')->nullable();
             $table->timestamp('date')->nullable();
             $table->string('observation')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->boolean('is_finished')->default(false);
+            $table->string('status')->default('Preparando');
+            
             $table->decimal('total', 10, 2)->default(0)->after('quantity');
             $table->timestamps();
         });

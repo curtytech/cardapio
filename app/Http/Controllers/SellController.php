@@ -44,6 +44,7 @@ class SellController extends Controller
                 'observation' => $observation,
                 'is_paid' => false,
                 'is_finished' => false,
+                'ip' => $request->ip(),
                 'total' => $total
             ]);
 
@@ -64,6 +65,7 @@ class SellController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pedido realizado com sucesso!',
+                'sell_id' => $sell->id,
                 // 'url' => route('payment.checkout', $sell->id) // Exemplo se tiver pagamento
             ]);
         } catch (\Exception $e) {
@@ -71,5 +73,27 @@ class SellController extends Controller
             Log::error('Erro ao processar venda: ' . $e->getMessage());
             return response()->json(['error' => 'Erro ao processar pedido: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function clientOrders(Request $request)
+    {
+        $request->validate([
+            'sell_ids' => 'required|array',
+            'sell_ids.*' => 'integer|exists:sells,id',
+            'table_id' => 'required|exists:restaurant_tables,id',
+        ]);
+
+        $sellIds = $request->input('sell_ids');
+
+        $sells = \App\Models\Sell::whereIn('id', $sellIds)
+            ->where('table_id', $request->input('table_id'))
+            ->with(['sellProductsGroups.product'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'orders' => $sells
+        ]);
     }
 }

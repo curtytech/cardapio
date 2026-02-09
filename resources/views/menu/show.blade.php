@@ -451,7 +451,7 @@
         });
     </script>
 
-    <!-- Order Floating Button -->  
+    <!-- Order Floating Button -->
     <div id="order-floating-btn" class="fixed left-6 z-50 cursor-pointer animate-bounce" style="bottom: 110px;" onclick="toggleOrderModal()">
         <div class="bg-green-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-green-700 transition-all transform hover:scale-110 border-2 border-white">
             <div class="relative">
@@ -472,6 +472,36 @@
         </div>
     </div>
 
+    <div id="order-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="toggleOrderModal()"></div>
+
+        <div class="fixed inset-0 z-10 overflow-y-auto pointer-events-none">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg pointer-events-auto">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="flex justify-between items-center mb-6 border-b pb-4">
+                            <h3 class="text-xl font-bold leading-6 text-gray-900 flex items-center gap-2" id="modal-title">
+                                <i class="fas fa-list-alt text-green-500"></i> Meus Pedidos
+                            </h3>
+                            <button onclick="toggleOrderModal()" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div id="order-items" class="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                            <!-- Orders will be injected here -->
+                        </div>
+
+                        <div class="mt-6 border-t pt-4 bg-gray-50 -mx-6 -mb-4 p-6">
+                            <button type="button" class="inline-flex w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all" onclick="toggleOrderModal()">
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -539,6 +569,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize cart manager
             window.cartManager = new CartManager();
+            updateOrderCount();
         });
 
         // UI Logic for Cart
@@ -575,6 +606,134 @@
                 document.body.style.overflow = '';
             }
         }
+
+        function toggleOrderModal() {
+            const modal = document.getElementById('order-modal');
+            const isHidden = modal.classList.contains('hidden');
+
+            if (isHidden) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                loadOrders();
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function loadOrders() {
+            const orderIds = JSON.parse(localStorage.getItem('my_orders') || '[]');
+            const container = document.getElementById('order-items');
+
+            if (orderIds.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-receipt text-3xl text-gray-300"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">Você ainda não fez pedidos</p>
+                    </div>`;
+                return;
+            }
+
+            // Show loading
+            container.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                    <p>Carregando pedidos...</p>
+                </div>`;
+
+            fetch("{{ route('client.orders') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        sell_ids: orderIds,
+                        table_id: document.getElementById('table_id').value,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderOrders(data.orders);
+                    } else {
+                        container.innerHTML = '<p class="text-center text-red-500">Erro ao carregar pedidos.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    container.innerHTML = '<p class="text-center text-red-500">Erro ao carregar pedidos.</p>';
+                });
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('order-items');
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-receipt text-3xl text-gray-300"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">Nenhum pedido encontrado</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const date = new Date(order.created_at).toLocaleString('pt-BR');
+                const total = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(order.total);
+                const statusColor = order.is_finished ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+                const statusText = order.is_finished ? 'Finalizado' : 'Em Preparo';
+                const statusIcon = order.is_finished ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-clock"></i>';
+
+                const itemsHtml = order.sell_products_groups.map(group => `
+                    <div class="flex justify-between text-sm text-gray-600 mt-1 border-b border-gray-50 pb-1 last:border-0">
+                        <span class="font-medium">${group.quantity}x ${group.product.name}</span>
+                    </div>
+                `).join('');
+
+                return `
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 block mb-1">PEDIDO #${order.id}</span>
+                            <div class="text-xs text-gray-500"><i class="far fa-calendar-alt mr-1"></i> ${date}</div>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 rounded-full ${statusColor} flex items-center gap-1">
+                            ${statusIcon} ${statusText}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3 space-y-1 bg-gray-50 p-3 rounded-lg">
+                        ${itemsHtml}
+                    </div>
+                    
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-sm font-medium text-gray-600">Total</span>
+                        <span class="text-lg font-bold text-green-600">${total}</span>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function updateOrderCount() {
+            const myOrders = JSON.parse(localStorage.getItem('my_orders') || '[]');
+            const count = myOrders.length;
+            const badge = document.getElementById('order-count');
+            if (badge) {
+                badge.textContent = count;
+                badge.classList.toggle('hidden', count === 0);
+            }
+        }
+
 
         function renderCartItems() {
             const items = window.cartManager.getItems();
@@ -620,28 +779,36 @@
         }
 
         function finalizeOrder() {
-            // alert('Funcionalidade de finalizar pedido será implementada em breve!');
+
+            let clientIP = '';
+            fetch('https://api.ipify.org?format=json')
+                .then(res => res.json())
+                .then(data => {
+                    clientIP = data.ip;
+                });
+
             const orderData = {
                 cart: window.cartManager.getItems(),
                 total: window.cartManager.getTotal(),
                 table_id: Number(document.getElementById('table_id').value),
                 user_id: <?= $user->id ?>,
                 client_name: document.getElementById('client_name').value,
-                observation: document.getElementById('observation').value
+                observation: document.getElementById('observation').value,
+                ip: clientIP || '0'
             };
 
             if (!orderData.table_id) {
-                showNotification('Por favor, selecione sua mesa.', 'error');    
+                showNotification('Por favor, selecione sua mesa.', 'error');
                 return;
             }
 
             if (orderData.total === 0 || !orderData.cart.length) {
-                showNotification('Carrinho vazio! Adicione itens antes de finalizar.', 'error');    
+                showNotification('Carrinho vazio! Adicione itens antes de finalizar.', 'error');
                 return;
             }
 
             if (!orderData.client_name || orderData.client_name.trim() === '') {
-                showNotification('Por favor, insira seu nome.', 'error');    
+                showNotification('Por favor, insira seu nome.', 'error');
                 return;
             }
 
@@ -670,6 +837,16 @@
                 .then(data => {
                     if (data.success) {
                         showNotification(data.message, 'success');
+
+                        if (data.sell_id) {
+                            const myOrders = JSON.parse(localStorage.getItem('my_orders') || '[]');
+                            if (!myOrders.includes(data.sell_id)) {
+                                myOrders.push(data.sell_id);
+                                localStorage.setItem('my_orders', JSON.stringify(myOrders));
+                            }
+                            updateOrderCount();
+                        }
+
                         window.cartManager.clear();
                         toggleCartModal();
                         if (data.url) {
@@ -687,7 +864,7 @@
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                 });
-            
+
             console.log(orderData);
         }
 

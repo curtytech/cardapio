@@ -15,6 +15,8 @@ class Sell extends Model
         'observation',
         'is_paid',
         'is_finished',
+        'status',
+        'ip',
         'total',
     ];
 
