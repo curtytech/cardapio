@@ -32,3 +32,6 @@ Route::post('/test-webhook', function () {
 
 Route::post('/client-buys', [SellController::class, 'clientBuys'])
     ->name('client.buys');
+
+Route::post('/client-orders', [SellController::class, 'clientOrders'])
+    ->name('client.orders');

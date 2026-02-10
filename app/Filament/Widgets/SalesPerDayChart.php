@@ -21,9 +21,9 @@ class SalesPerDayChart extends ChartWidget
         $end = now()->endOfMonth();
 
         $results = Sell::query()
-            ->selectRaw('DATE(sells.date) as date, SUM(products_quantities.quantity * products.sell_price) as aggregate')
-            ->join('products_quantities', 'products_quantities.sell_id', '=', 'sells.id')
-            ->join('products', 'products_quantities.product_id', '=', 'products.id')
+            ->selectRaw('DATE(sells.date) as date, SUM(sell_products_groups.quantity * products.sell_price) as aggregate')
+            ->join('sell_products_groups', 'sell_products_groups.sell_id', '=', 'sells.id')
+            ->join('products', 'sell_products_groups.product_id', '=', 'products.id')
             ->where('sells.user_id', auth()->id())
             ->whereBetween('sells.date', [$start, $end])
             ->groupBy('date')

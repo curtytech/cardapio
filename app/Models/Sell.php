@@ -11,11 +11,13 @@ class Sell extends Model
     protected $fillable = [
         'user_id',
         'table_id',
+        'ip',
         'client_name',
         'date',
         'observation',
         'is_paid',
         'is_finished',
+        'status',
         'total',
     ];
 
@@ -31,7 +33,7 @@ class Sell extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function table(): BelongsTo
+    public function restaurantTable(): BelongsTo
     {
         return $this->belongsTo(RestaurantTable::class, 'table_id');
     }
@@ -42,7 +44,7 @@ class Sell extends Model
     }
 
     public function getMesaLabelAttribute(): ?string
-{
-    return $this->table?->number;
-}
+    {
+        return $this->restaurantTable?->number;
+    }
 }

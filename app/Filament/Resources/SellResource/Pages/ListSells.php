@@ -24,4 +24,12 @@ class ListSells extends ListRecords
                 ->label('Nova Venda'),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\SalesOverview::class,
+            // \App\Filament\Widgets\SalesPerDayChart::class,
+        ];
+    }
 }
