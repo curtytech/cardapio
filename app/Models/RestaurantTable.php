@@ -17,6 +17,8 @@ class RestaurantTable extends Model
         'description',
     ];
 
+   
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
