@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use App\Models\User;
 use Filament\Forms;
@@ -12,24 +11,21 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
-
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
-    
+
     protected static ?string $navigationLabel = 'Categorias';
-    
+
     protected static ?string $modelLabel = 'Categoria';
-    
+
     protected static ?string $pluralModelLabel = 'Categorias';
 
     protected static ?string $navigationGroup = 'Gerenciamento do Restaurante';
-
 
     public static function form(Form $form): Form
     {
@@ -50,7 +46,7 @@ class CategoryResource extends Resource
                             ->required()
                             ->maxLength(50)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn (string $context, $state, Forms\Set $set) => $context === 'create' ? $set('slug', Str::slug($state)) : null),                      
+                            ->afterStateUpdated(fn (string $context, $state, Forms\Set $set) => $context === 'create' ? $set('slug', Str::slug($state)) : null),
                         Forms\Components\Textarea::make('description')
                             ->label('Descrição')
                             ->maxLength(500)
@@ -131,42 +127,42 @@ class CategoryResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        
+
         // Se o usuário logado for 'user', só pode ver suas próprias categorias
         if (auth()->user()->role === 'user') {
             $query->where('user_id', auth()->id());
         }
-        
+
         return $query;
     }
-    
+
     public static function canEdit($record): bool
     {
         // Admins e managers podem editar qualquer categoria
         if (in_array(auth()->user()->role, ['admin', 'manager'])) {
             return true;
         }
-        
+
         // Usuários 'user' só podem editar suas próprias categorias
         if (auth()->user()->role === 'user') {
             return $record->user_id === auth()->id();
         }
-        
+
         return false;
     }
-    
+
     public static function canDelete($record): bool
     {
         // Admins podem deletar qualquer categoria
         if (auth()->user()->role === 'admin') {
             return true;
         }
-        
+
         // Managers e usuários 'user' só podem deletar suas próprias categorias
         if (in_array(auth()->user()->role, ['manager', 'user'])) {
             return $record->user_id === auth()->id();
         }
-        
+
         return false;
     }
 

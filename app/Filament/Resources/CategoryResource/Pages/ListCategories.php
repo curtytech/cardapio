@@ -10,10 +10,18 @@ class ListCategories extends ListRecords
 {
     protected static string $resource = CategoryResource::class;
 
+    protected static ?string $title = 'Categorias';
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lista';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nova Categoria'),
         ];
     }
 }

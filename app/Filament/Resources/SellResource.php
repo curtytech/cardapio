@@ -33,6 +33,9 @@ class SellResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Hidden::make('table_id')
+                    ->default(fn () => request()->get('table_id'))
+                    ->required(),
                 Forms\Components\Section::make('cliente')
                     ->extraAttributes(['class' => 'hidden'])
                     ->schema([
@@ -189,6 +192,10 @@ class SellResource extends Resource
                     ->label('Cliente')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('mesa_virtual')
+                    ->label('Mesa')
+                    ->getStateUsing(fn (Sell $record) => 'Mesa ' . $record->table_id)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total')
                     ->state(function (Sell $record): float {
@@ -229,7 +236,10 @@ class SellResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()->with(['sellProductsGroups.product']);
+        $query = parent::getEloquentQuery()->with([
+            'sellProductsGroups.product',
+            'table',
+        ]);
 
         if (auth()->user()?->role !== 'admin') {
             $query->where('user_id', auth()->id());
