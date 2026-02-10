@@ -33,8 +33,17 @@ class SellResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Hidden::make('table_id')
+                Forms\Components\Select::make('table_id')
+                    ->label('Mesa')
+                    ->relationship('restaurantTable', 'number', function ($query) {
+                        // Se o usuário logado for 'user', só pode ver suas próprias mesas
+                        if (auth()->user()->role === 'user') {
+                            $query->where('user_id', auth()->id());
+                        }
+                    })
                     ->default(fn () => request()->get('table_id'))
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Forms\Components\Section::make('cliente')
                     ->extraAttributes(['class' => 'hidden'])
@@ -55,7 +64,7 @@ class SellResource extends Resource
                                 ->map(function (Product $product) {
                                     return Action::make('add_product_' . $product->id)
                                         ->label(function (Get $get) use ($product) {
-                                            $items = $get('') ?? [];
+                                            $items = $get('sellProductsGroups') ?? [];
                                             $qty = 0;
 
                                             foreach ($items as $item) {
@@ -153,17 +162,6 @@ class SellResource extends Resource
 
                                 return 'R$ ' . number_format($total, 2, ',', '.');
                             }),
-                        // Forms\Components\Select::make('table_id')
-                        //     ->label('Mesa')
-                        //     ->relationship('table', 'number', function ($query) {
-                        //         // Se o usuário logado for 'user', só pode ver suas próprias mesas
-                        //         if (auth()->user()->role === 'user') {
-                        //             $query->where('user_id', auth()->id());
-                        //         }
-                        //     })
-                        //     ->searchable()
-                        //     ->preload()
-                        //     ->required(),
 
                         Forms\Components\TextInput::make('client_name')
                             ->label('Nome do Cliente')
