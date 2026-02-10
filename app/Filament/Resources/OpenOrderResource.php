@@ -15,6 +15,8 @@ class OpenOrderResource extends Resource
     protected static ?string $model = Sell::class;
 
     protected static ?string $navigationLabel = 'Pedidos em Aberto';
+
+     protected static ?string $modelLabel = 'Pedido';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Gerenciamento do Restaurante';
 
@@ -38,7 +40,7 @@ class OpenOrderResource extends Resource
 {
     return $table
         ->columns([
-            Tables\Columns\TextColumn::make('table.name')
+            Tables\Columns\TextColumn::make('table.number')
                 ->label('Mesa')
                 ->sortable(),
 
@@ -62,9 +64,18 @@ class OpenOrderResource extends Resource
                 ->money('BRL')
                 ->sortable(),
 
+           Tables\Columns\TextColumn::make('observation')
+                ->label('Observações')
+                ->limit(30)
+                ->tooltip(fn (Sell $record) => $record->observation),
+
             Tables\Columns\TextColumn::make('created_at')
                 ->label('Criado em')
                 ->dateTime('d/m/Y H:i'),
+
+            Tables\Columns\IconColumn::make('is_paid')
+                ->label('Pago')
+                ->boolean(),
         ])
         ->filters([
             Tables\Filters\SelectFilter::make('table_id')
@@ -100,6 +111,18 @@ class OpenOrderResource extends Resource
                 ->action(fn (Sell $record) => $record->update([
                     'is_finished' => true,
                 ])),
+
+            Tables\Actions\Action::make('markAsPaid')
+                ->label('Marcar como pago')
+                ->icon('heroicon-o-currency-dollar')
+                ->color('success')
+                ->requiresConfirmation()
+                ->visible(fn (Sell $record) => ! $record->is_paid)
+                ->action(function (Sell $record) {
+                    $record->update([
+                        'is_paid' => true,
+                    ]);
+                }),
         ])
         ->defaultSort('created_at', 'asc');
 }
