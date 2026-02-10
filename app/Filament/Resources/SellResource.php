@@ -223,6 +223,11 @@ class SellResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('print')
+                    ->label('Imprimir')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn (Sell $record) => route('sells.print', $record))
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

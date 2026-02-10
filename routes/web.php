@@ -33,6 +33,9 @@ Route::middleware('auth')->group(function () {
 
     // Checkout
     Route::post('/checkout/mercadopago', [MercadoPagoController::class, 'checkout'])->name('mercadopago.checkout');
+
+    // Print Sell
+    Route::get('/sells/{sell}/print', [\App\Http\Controllers\SellController::class, 'print'])->name('sells.print');
 });
 
 // Webhook fica na routes/api.php

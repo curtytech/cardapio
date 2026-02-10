@@ -97,4 +97,15 @@ class SellController extends Controller
             'orders' => $sells
         ]);
     }
+
+    public function print(\App\Models\Sell $sell)
+    {
+        // Ensure user can only print their own sells or if admin
+        if (auth()->check() && auth()->user()->role !== 'admin' && auth()->id() !== $sell->user_id) {
+            abort(403);
+        }
+
+        $sell->load(['sellProductsGroups.product', 'restaurantTable']);
+        return view('sells.print', compact('sell'));
+    }
 }
