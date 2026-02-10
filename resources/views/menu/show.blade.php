@@ -456,8 +456,8 @@
     <div id="order-floating-btn" class="fixed left-6 z-50 cursor-pointer animate-bounce" style="bottom: 110px;" onclick="toggleOrderModal()">
         <div class="bg-green-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-green-700 transition-all transform hover:scale-110 border-2 border-white">
             <div class="relative">
-                <i class="fa-solid fa-basket-shopping text-xl"></i>
-                <span id="order-count" class="absolute -top-2 -right-2 bg-white text-green-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">0</span>
+                <i class="fas fa-list-alt text-xl"></i>
+                <!-- <span id="order-count" class="absolute -top-2 -right-2 bg-white text-green-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">0</span> -->
             </div>
         </div>
     </div>
@@ -532,10 +532,11 @@
                         <div class="mt-4 space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar w-full">
                             <input id="client_name" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Seu nome">
 
-                            <select id="table_id" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <select id="table_id" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500"
+                                <?= $tableNumber ? 'disabled="true"' : '' ?>>
                                 <option value="">Selecione sua mesa</option>
                                 @foreach($restaurantTables as $table)
-                                <option value="{{ $table->id }}" @selected(request()->route('table') == $table->id)>
+                                <option value="{{ $table->id }}" @selected(request()->route('tableNumber') == $table->number)>
                                     Mesa {{ $table->number }}
                                 </option>
                                 @endforeach
@@ -570,7 +571,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize cart manager
             window.cartManager = new CartManager();
-            updateOrderCount();
+            // updateOrderCount();
         });
 
         // UI Logic for Cart
@@ -623,20 +624,16 @@
         }
 
         function loadOrders() {
-            const orderIds = JSON.parse(localStorage.getItem('my_orders') || '[]');
             const container = document.getElementById('order-items');
-
-            if (orderIds.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-receipt text-3xl text-gray-300"></i>
-                        </div>
-                        <p class="text-gray-500 font-medium">Você ainda não fez pedidos</p>
-                    </div>`;
+            const tableId = Number(document.getElementById('table_id').value);
+            const userId = <?= json_encode($user->id) ?>;
+            
+            console.log(tableId, userId)
+            if (!tableId) {
+                container.innerHTML = '<p class="text-center text-red-500">Abra o link pelo Qr Code da mesa para acessar seus pedidos.</p>';
                 return;
             }
-
+    
             // Show loading
             container.innerHTML = `
                 <div class="text-center py-8 text-gray-500">
@@ -652,8 +649,8 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
                     },
                     body: JSON.stringify({
-                        sell_ids: orderIds,
-                        table_id: document.getElementById('table_id').value,
+                        user_id: userId,
+                        table_id: tableId,
                     }),
                 })
                 .then(response => response.json())
@@ -725,17 +722,6 @@
             }).join('');
         }
 
-        function updateOrderCount() {
-            const myOrders = JSON.parse(localStorage.getItem('my_orders') || '[]');
-            const count = myOrders.length;
-            const badge = document.getElementById('order-count');
-            if (badge) {
-                badge.textContent = count;
-                badge.classList.toggle('hidden', count === 0);
-            }
-        }
-
-
         function renderCartItems() {
             const items = window.cartManager.getItems();
             const container = document.getElementById('cart-items');
@@ -795,7 +781,8 @@
                 user_id: <?= $user->id ?>,
                 client_name: document.getElementById('client_name').value,
                 observation: document.getElementById('observation').value,
-                ip: clientIP || '0'
+                ip: clientIP || '0',
+                date: new Date().toISOString().slice(0, 10),
             };
 
             if (!orderData.table_id) {
@@ -845,7 +832,7 @@
                                 myOrders.push(data.sell_id);
                                 localStorage.setItem('my_orders', JSON.stringify(myOrders));
                             }
-                            updateOrderCount();
+                            // updateOrderCount();
                         }
 
                         window.cartManager.clear();

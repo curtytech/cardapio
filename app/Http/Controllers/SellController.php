@@ -19,6 +19,7 @@ class SellController extends Controller
             'client_name' => 'required|string|max:255',
             'observation' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
+            'date' => 'required|date_format:Y-m-d',
         ]);
 
         // dump($request->all());
@@ -38,7 +39,7 @@ class SellController extends Controller
                 'user_id' => $userId, 
                 'table_id' => $tableId,
                 'client_name' => $clientName,
-                'date' => now(),
+                'date' => $request->input('date'),
                 'observation' => $observation,
                 'is_paid' => false,
                 'is_finished' => false,
@@ -76,15 +77,17 @@ class SellController extends Controller
     public function clientOrders(Request $request)
     {
         $request->validate([
-            'sell_ids' => 'required|array',
-            'sell_ids.*' => 'integer|exists:sells,id',
+            'user_id' => 'required|exists:users,id',
             'table_id' => 'required|exists:restaurant_tables,id',
         ]);
 
-        $sellIds = $request->input('sell_ids');
+        $userId = (int) $request->input('user_id');
+        $tableId = (int) $request->input('table_id');
 
-        $sells = \App\Models\Sell::whereIn('id', $sellIds)
-            ->where('table_id', $request->input('table_id'))
+        $sells = \App\Models\Sell::where('user_id', $userId)
+            ->where('table_id', $tableId)
+            ->where('is_finished', false)
+            ->whereDate('date', now())
             ->with(['sellProductsGroups.product'])
             ->orderBy('created_at', 'desc')
             ->get();

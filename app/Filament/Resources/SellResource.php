@@ -238,7 +238,7 @@ class SellResource extends Resource
     {
         $query = parent::getEloquentQuery()->with([
             'sellProductsGroups.product',
-            'table',
+            'restaurantTable',
         ]);
 
         if (auth()->user()?->role !== 'admin') {

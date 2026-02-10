@@ -16,7 +16,7 @@ class MenuController extends Controller
     /**
      * Exibe o cardápio de um usuário específico baseado no slug.
      */
-    public function show(string $slug, ?string $mesa = null)
+    public function show(string $slug, ?string $tableNumber = null)
     {
         // Busca o usuário pelo slug
         $user = User::where('slug', $slug)->firstOrFail();
@@ -67,8 +67,13 @@ class MenuController extends Controller
         $restaurantTables = RestaurantTable::where('user_id', $user->id)
             ->orderBy('number')
             ->get();
+
+        // Se o número da mesa foi informado mas não existe, redireciona para null
+        if ($tableNumber && !$restaurantTables->contains('number', $tableNumber)) {
+            return redirect()->route('menu.show', ['slug' => $slug]);
+        }
         
-        return view('menu.show', compact('user', 'categories', 'restaurantTables', 'hasPayment', 'viewsTotal'));
+        return view('menu.show', compact('user', 'categories', 'restaurantTables', 'tableNumber', 'hasPayment', 'viewsTotal'));
     }
     
     /**
