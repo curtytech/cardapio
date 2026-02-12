@@ -69,6 +69,16 @@ class RestaurantTableResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('qrcode')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->modalHeading(fn (RestaurantTable $record) => "Mesa {$record->number}")
+                    ->modalContent(fn (RestaurantTable $record) => view('filament.resources.restaurant-table.qr-code', [
+                        'record' => $record,
+                        'url' => route('menu.show', ['slug' => $record->user->slug, 'tableNumber' => $record->number]),
+                    ]))
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Fechar'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
