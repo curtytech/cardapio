@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OpenOrderResource\Pages\ListOpenOrders;
+use App\Filament\Resources\ClosedOrderResource\Pages\ListClosedOrders;
 use App\Models\Sell;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -10,21 +10,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DatePicker;
 
-class OpenOrderResource extends Resource
+class ClosedOrderResource extends Resource
 {
     protected static ?string $model = Sell::class;
-    protected static ?string $navigationLabel = 'Pedidos em Aberto';
+    protected static ?string $navigationLabel = 'Pedidos Fechados';
     protected static ?string $modelLabel = 'Pedido';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $navigationGroup = 'Gerenciamento do Restaurante';
 
     /**
-     * Apenas pedidos não finalizados
+     * Apenas pedidos finalizados
      */
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()
-            ->where('is_finished', false)
+            ->where('is_finished', true)
             ->with([
                 'restaurantTable',
                 'sellProductsGroups.product',
@@ -110,13 +110,13 @@ class OpenOrderResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\Action::make('finalizar')
-                    ->label('Finalizar Pedido')
+                Tables\Actions\Action::make('reopen')
+                    ->label('Reabrir Pedido')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(fn(Sell $record) => $record->update([
-                        'is_finished' => true,
+                        'is_finished' => false,
                     ])),
 
                 Tables\Actions\Action::make('markAsPaid')
@@ -141,7 +141,7 @@ class OpenOrderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListOpenOrders::route('/'),
+            'index' => ListClosedOrders::route('/'),
         ];
     }
 }

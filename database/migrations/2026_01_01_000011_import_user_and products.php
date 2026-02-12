@@ -70,6 +70,15 @@ return new class extends Migration
                 INSERT INTO categories
                 (id, user_id, name, description, color, is_active, created_at, updated_at, slug)
                 VALUES(42, 21, 'aaaaa', 'asdasdas', '#3B82F6', 1, '2025-12-09 14:47:17', '2025-12-09 14:47:17', NULL);
+                INSERT INTO categories
+                (id, user_id, name, description, color, is_active, created_at, updated_at, slug)
+                VALUES(53, 27, 'Laches', 'Sabor e praticidade em cada mordida. De sanduíches clássicos a salgados irresistíveis.', '#fcc500', 1, '2026-02-11 19:16:16', '2026-02-11 19:20:36', NULL);
+                INSERT INTO categories
+                (id, user_id, name, description, color, is_active, created_at, updated_at, slug)
+                VALUES(54, 27, 'Pratos Principais', 'Sabores que conquistam. Cada prato é pensado para uma experiência deliciosa e memorável.', '#fcc500', 1, '2026-02-11 19:16:49', '2026-02-11 19:20:42', NULL);
+                INSERT INTO categories
+                (id, user_id, name, description, color, is_active, created_at, updated_at, slug)
+                VALUES(55, 27, 'Sobremesas', 'Delícias que derretem na boca. Perfeitas para fechar a refeição com chave de ouro.', '#e00000', 1, '2026-02-11 19:20:23', '2026-02-11 19:20:23', NULL);
 
                 INSERT INTO products
                 (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
@@ -125,6 +134,37 @@ return new class extends Migration
                 INSERT INTO products
                 (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
                 VALUES(155, 28, 47, NULL, 'coca', '<p>coca</p>', NULL, 'active', 8, '[]', '2026-02-03 17:20:48', '2026-02-03 17:20:48');
+
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(158, 27, 46, NULL, 'Drink Tropical', '<p>&nbsp;Um mix vibrante de frutas tropicais, leve e refrescante, ideal para momentos de descontração.&nbsp;</p>', 'products/01KH7CZFFPYA8X6EX6FRM1FFBD.png', 'active', 13, '["Tropical","Frutado","Refrescante"]', '2026-02-11 19:25:48', '2026-02-11 19:32:08');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(159, 27, 46, NULL, 'Drink Carioca', '<p>&nbsp;Um sabor autêntico do Rio de Janeiro: refrescante, frutado e cheio de energia para qualquer ocasião.&nbsp;</p>', 'products/01KH7D47BP8XFZ1T1CR7CQGAFW.png', 'active', 15, '["Refrescante","Frutas Tropicais","Ver\u00e3o Carioca"]', '2026-02-11 19:28:01', '2026-02-11 19:32:29');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(160, 27, 54, NULL, 'Panqueca', '<p>Massa macia e delicada, recheada com sabores irresistíveis que agradam a todos os paladares.&nbsp;</p>', 'products/01KH7E42P0PA5QRGE82ECT7TRT.png', 'active', 30, '["Macia","Recheada","Vers\u00e1til"]', '2026-02-11 19:44:01', '2026-02-11 19:46:02');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(161, 27, 54, NULL, 'Prato da Casa', '<p>Uma refeição completa e saborosa, preparada com ingredientes frescos e carinho, perfeita para qualquer momento.&nbsp;</p>', 'products/01KH7E6QGFRR9XDH5XQCDAY4M6.png', 'active', 30, '[]', '2026-02-11 19:47:29', '2026-02-11 19:47:29');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(162, 27, 55, NULL, 'Bolo De Chocolate', '<p>&nbsp;Um clássico irresistível, macio e úmido, com sabor intenso de chocolate que derrete na boca.&nbsp;</p>', 'products/01KH7EB7TXDA84CNDH86M53172.png', 'active', 15, '["Macio","Chocolate","Irresist\u00edvel"]', '2026-02-11 19:49:20', '2026-02-11 19:49:57');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(163, 27, 55, NULL, 'Torta De Morango', '<p>Delicada e doce, com morangos frescos sobre uma base crocante e recheio cremoso que encanta o paladar.&nbsp;</p>', 'products/01KH7EGQQTFRAZRATMATQF2MSM.png', 'active', 16, '["Doce","Cremosa","Frutada"]', '2026-02-11 19:52:30', '2026-02-11 19:52:57');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(164, 27, 55, NULL, 'Cupcake Da Casa', '<p>Delicioso e artesanal, com massa macia e cobertura saborosa, perfeito para um momento doce a qualquer hora.<br><br></p>', 'products/01KH7ENSSSC3C8YCAPREE1T6X5.png', 'active', 10, '["Macio","Doce","Artesanal"]', '2026-02-11 19:55:06', '2026-02-11 19:55:43');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(165, 27, 53, NULL, 'Coxinha', '<p>Crocante por fora e recheada de sabor por dentro, um clássico irresistível dos salgados&nbsp;</p>', 'products/01KH7EVHMSDQATJ3TM5ZYA7N9V.png', 'active', 6, '["Crocante","Recheada","Cl\u00e1ssica"]', '2026-02-11 19:58:07', '2026-02-11 19:58:51');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(166, 27, 53, NULL, 'Especial Da Casa', '<p>Lanche no pão, recheado com ingredientes selecionados e saborosos, feito para quem busca uma experiência única.&nbsp;</p>', 'products/01KH7FHA9CS3QNNTEMXFA2VA6G.png', 'active', 18, '[]', '2026-02-11 20:10:19', '2026-02-11 20:10:45');
+                INSERT INTO products
+                (id, user_id, category_id, barcode, name, description, image, status, sell_price, features, created_at, updated_at)
+                VALUES(167, 27, 53, NULL, 'Hambúrguer de Forno', '<p>Suculento e assado, com carne macia e temperos especiais, perfeito para um lanche cheio de sabor.&nbsp;</p>', 'products/01KH7FPN1Z3TV21DPY2K8VPXJS.png', 'active', 16, '["Suculento","Assado","Saboroso"]', '2026-02-11 20:13:16', '2026-02-11 20:13:39');
             SQL
         );
     }
