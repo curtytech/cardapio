@@ -21,9 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SellResourceSimple extends Resource
 {
     protected static ?string $model = Sell::class;
-
+    
     // Slug único para este resource, evitando conflito com SellResource
-    protected static ?string $slug = 'vendas-simples';
+     protected static ?string $slug = 'vendas-simples';
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?string $modelLabel = 'Venda Simples';
@@ -31,6 +31,11 @@ class SellResourceSimple extends Resource
     protected static ?string $navigationLabel = 'Vendas Simples';
 
     protected static ?string $navigationGroup = 'Gerenciamento de Vendas';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {
