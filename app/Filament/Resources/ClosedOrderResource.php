@@ -15,9 +15,8 @@ class ClosedOrderResource extends Resource
     protected static ?string $model = Sell::class;
     protected static ?string $navigationLabel = 'Pedidos Fechados';
     protected static ?string $modelLabel = 'Pedido';
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
     protected static ?string $navigationGroup = 'Gerenciamento do Restaurante';
-
     /**
      * Apenas pedidos finalizados
      */

@@ -15,7 +15,7 @@ class RestaurantTableResource extends Resource
 {
     protected static ?string $model = RestaurantTable::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-table-cells';
+    protected static ?string $navigationIcon = 'heroicon-o-qr-code';
     
     protected static ?string $modelLabel = 'Mesa';
 
