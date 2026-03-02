@@ -42,3 +42,5 @@ ln -s //home/u359724568/domains/mcboutique.com.br/storage/app/public storage
 
 ### Enter In SHH ignore user erro of windows
 ssh -F NUL -p [port] [sshuserip]
+
+

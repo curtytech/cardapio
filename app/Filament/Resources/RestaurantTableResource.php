@@ -39,10 +39,12 @@ class RestaurantTableResource extends Resource
                 Forms\Components\TextInput::make('number')
                     ->label('Número / Nome da Mesa')
                     ->required()
+                    ->numeric()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('capacity')
                     ->label('Capacidade')
                     ->required()
+                    ->numeric()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
                     ->label('Descrição')
@@ -60,7 +62,8 @@ class RestaurantTableResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('capacity')
                     ->label('Capacidade')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Descrição')
                     ->limit(50),
