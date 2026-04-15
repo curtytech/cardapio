@@ -327,7 +327,7 @@
 
     {{-- Botão/Painel de Pagamento (colapsável, não intrusivo) --}}
     @if(!$hasPayment)
-    <div id="pay-toggle-{{ $user->id }}" class="fixed bottom-7 z-50 animate-bounce" style="right: 7rem;">
+    <!-- <div id="pay-toggle-{{ $user->id }}" class="fixed bottom-7 z-50 animate-bounce" style="right: 7rem;">
         <form method="POST" action="{{ route('mercadopago.checkout') }}">
             @csrf
             <button id="pay-open-btn-{{ $user->id }}"
@@ -336,7 +336,7 @@
                 <span>Pagar assinatura</span>
             </button>
         </form>
-    </div>
+    </div> -->
     @endif
 
     <!-- Botões Flutuantes de Redes Sociais (Ocultos no Mobile) -->
