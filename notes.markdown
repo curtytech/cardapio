@@ -1,8 +1,6 @@
 # Bloco de Notas
 
 ## Campos
-
-
 - [ ] Lista 1
 - [x] Lista 2
 
@@ -43,4 +41,5 @@ ln -s //home/u359724568/domains/mcboutique.com.br/storage/app/public storage
 ### Enter In SHH ignore user erro of windows
 ssh -F NUL -p [port] [sshuserip]
 
-
+## Composer production
+composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
