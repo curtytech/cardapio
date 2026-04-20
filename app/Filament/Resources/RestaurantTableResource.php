@@ -102,7 +102,7 @@ class RestaurantTableResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRestaurantTables::route('/'),
+            'index' => Pages\ListRestaurantTable::route('/'),
             'create' => Pages\CreateRestaurantTable::route('/create'),
             'edit' => Pages\EditRestaurantTable::route('/{record}/edit'),
         ];

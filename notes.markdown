@@ -35,7 +35,6 @@ ngrok http 80 --host-header=cardapiovirtual
 cd ~/domains/nome-do-dominio/public_html
 ln -s /home/u233139548/domains/cardapiovirtual.space/storage/app/public storage
 
-
 ln -s //home/u359724568/domains/mcboutique.com.br/storage/app/public storage
 
 ### Enter In SHH ignore user erro of windows
@@ -43,3 +42,6 @@ ssh -F NUL -p [port] [sshuserip]
 
 ## Composer production
 composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+### Composer resolver erros
+composer dump-autoload -o
