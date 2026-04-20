@@ -6,7 +6,7 @@ use App\Filament\Resources\RestaurantTableResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListRestaurantTables extends ListRecords
+class ListRestaurantTable extends ListRecords
 {
     protected static string $resource = RestaurantTableResource::class;
 
