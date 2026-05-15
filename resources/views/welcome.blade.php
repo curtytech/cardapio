@@ -65,10 +65,10 @@
                                 <i class="fas fa-sign-in-alt mr-2"></i>Entrar
                             </a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" 
+                                <!-- <a href="{{ route('register') }}" 
                                    class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-300 backdrop-blur-sm">
                                     <i class="fas fa-user-plus mr-2"></i>Cadastrar
-                                </a>
+                                </a> -->
                             @endif
                         @endauth
                     </nav>
@@ -104,10 +104,10 @@
                 <!-- Botões de Ação -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
                     @guest
-                        <a href="{{ route('register') }}" 
+                        <!-- <a href="{{ route('register') }}" 
                            class="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
                             <i class="fas fa-rocket mr-2"></i>Começar Agora - Grátis
-                        </a>
+                        </a> -->
                         
                         <a href="{{ route('login') }}" 
                            class="glass-effect text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105">
