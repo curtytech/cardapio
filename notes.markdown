@@ -45,3 +45,6 @@ composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 ### Composer resolver erros
 composer dump-autoload -o
+
+
+php artisan key:generate

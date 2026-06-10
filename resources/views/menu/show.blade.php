@@ -68,106 +68,8 @@
         </div>
         @endif
 
-        <!-- Informações de Contato e Redes Sociais -->
-        <div class="bg-white/95 backdrop-blur-sm border-t border-white/20">
-            <div class="max-w-7xl mx-auto px-4 py-6">
-                <div class="flex flex-col space-y-4">
-                    <!-- Contato Principal -->
-                    <div class="flex flex-wrap gap-3 justify-center text-sm">
-
-                        @auth
-                        @if(Auth::user()->id == $user->id)
-                        <div class="flex items-center bg-gray-100 rounded-full px-2 ">
-                            <a href="{{{ url("admin/users/$user->id/edit") }}}"
-                                target="_blank"
-                                class="group gap-2 text-white rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-gray-500/25 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 backdrop-blur-lg border border-white/20">
-                                <i class="fas fa-gear text-2xl group-hover:scale-110 transition-transform duration-300 hover:from-gray-600 hover:to-gray-600 text-gray-600 rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-gray-500/25 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 backdrop-blur-lg border border-white/20"></i>
-                                <span class="text-gray-700 font-medium">Editar Página</span>
-                            </a>
-                        </div>
-                        @endif
-                        @endauth
-
-                        @if($user->celphone)
-                        <div class="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2">
-                            <i class="fas fa-phone text-emerald-500"></i>
-                            <span class="text-gray-700 font-medium">{{ $user->celphone }}</span>
-                        </div>
-                        @endif
-
-                        @if($user->whatsapp)
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->whatsapp) }}"
-                            target="_blank"
-                            class="flex items-center gap-2 bg-green-50 hover:bg-green-100 rounded-full px-3 py-2 transition-colors">
-                            <i class="fab fa-whatsapp text-green-500"></i>
-                            <span class="text-gray-700 font-medium">{{ $user->whatsapp }}</span>
-                        </a>
-                        @endif
-
-                        @if($user->email)
-                        <span
-                            class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 rounded-full px-3 py-2 transition-colors">
-                            <i class="fas fa-envelope text-blue-500"></i>
-                            <span class="text-gray-700 font-medium">{{ $user->email }}</span>
-                        </span>
-                        @endif
 
 
-                    </div>
-
-                    <!-- Redes Sociais -->
-                    @if($user->instagram || $user->facebook)
-                    <div class="flex gap-3 justify-center">
-                        @if($user->instagram)
-                        <a href="https://instagram.com/{{ $user->instagram }}"
-                            target="_blank"
-                            class="group flex items-center gap-2 bg-pink-50 hover:bg-pink-100 rounded-full px-3 py-2 transition-all duration-300 transform hover:scale-105">
-                            <i class="fab fa-instagram text-pink-500 group-hover:text-pink-600"></i>
-                            <span class="text-gray-700 font-medium text-sm">Instagram</span>
-                        </a>
-                        @endif
-
-                        @if($user->facebook)
-                        <a href="{{ $user->facebook }}"
-                            target="_blank"
-                            class="group flex items-center gap-2 bg-blue-50 hover:bg-blue-100 rounded-full px-3 py-2 transition-all duration-300 transform hover:scale-105">
-                            <i class="fab fa-facebook-f text-blue-500 group-hover:text-blue-600"></i>
-                            <span class="text-gray-700 font-medium text-sm">Facebook</span>
-                        </a>
-                        @endif
-                    </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Informações Detalhadas (se necessário) -->
-        @if($user->address || $user->neighborhood || $user->city || $user->state)
-        <div class="bg-gray-50 border-t border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 py-4">
-                <div class="flex items-start gap-3 text-gray-600 justify-center text-center">
-                    <i class="fas fa-map-marker-alt text-red-500 mt-1"></i>
-                    <div class="text-sm">
-                        @if($user->address)
-                        <span class="font-medium">{{ $user->address }}</span>
-                        @if($user->number), {{ $user->number }}@endif
-                        @if($user->complement) - {{ $user->complement }}@endif
-                        <br>
-                        @endif
-                        @if($user->neighborhood || $user->city || $user->state)
-                        <span class="text-gray-500">
-                            @if($user->neighborhood){{ $user->neighborhood }}@endif
-                            @if($user->neighborhood && ($user->city || $user->state)), @endif
-                            @if($user->city){{ $user->city }}@endif
-                            @if($user->city && $user->state) - @endif
-                            @if($user->state){{ $user->state }}@endif
-                        </span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
     </header>
 
 
@@ -315,6 +217,105 @@
 
     <!-- Footer -->
     <footer class="relative overflow-hidden">
+        <!-- Informações de Contato e Redes Sociais -->
+        <div class="bg-white/95 backdrop-blur-sm border-t border-white/20">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="flex flex-col space-y-4">
+                    <!-- Contato Principal -->
+                    <div class="flex flex-wrap gap-3 justify-center text-sm">
+
+                        @auth
+                        @if(Auth::user()->id == $user->id)
+                        <div class="flex items-center bg-gray-100 rounded-full px-2 ">
+                            <a href="{{{ url("admin/users/$user->id/edit") }}}"
+                                target="_blank"
+                                class="group gap-2 text-white rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-gray-500/25 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 backdrop-blur-lg border border-white/20">
+                                <i class="fas fa-gear text-2xl group-hover:scale-110 transition-transform duration-300 hover:from-gray-600 hover:to-gray-600 text-gray-600 rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-gray-500/25 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 backdrop-blur-lg border border-white/20"></i>
+                                <span class="text-gray-700 font-medium">Editar Página</span>
+                            </a>
+                        </div>
+                        @endif
+                        @endauth
+
+                        @if($user->celphone)
+                        <div class="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2">
+                            <i class="fas fa-phone text-emerald-500"></i>
+                            <span class="text-gray-700 font-medium">{{ $user->celphone }}</span>
+                        </div>
+                        @endif
+
+                        @if($user->whatsapp)
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $user->whatsapp) }}"
+                            target="_blank"
+                            class="flex items-center gap-2 bg-green-50 hover:bg-green-100 rounded-full px-3 py-2 transition-colors">
+                            <i class="fab fa-whatsapp text-green-500"></i>
+                            <span class="text-gray-700 font-medium">{{ $user->whatsapp }}</span>
+                        </a>
+                        @endif
+
+                        @if($user->email)
+                        <span
+                            class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 rounded-full px-3 py-2 transition-colors">
+                            <i class="fas fa-envelope text-blue-500"></i>
+                            <span class="text-gray-700 font-medium">{{ $user->email }}</span>
+                        </span>
+                        @endif
+
+
+                    </div>
+
+                    <!-- Redes Sociais -->
+                    @if($user->instagram || $user->facebook)
+                    <div class="flex gap-3 justify-center">
+                        @if($user->instagram)
+                        <a href="https://instagram.com/{{ $user->instagram }}"
+                            target="_blank"
+                            class="group flex items-center gap-2 bg-pink-50 hover:bg-pink-100 rounded-full px-3 py-2 transition-all duration-300 transform hover:scale-105">
+                            <i class="fab fa-instagram text-pink-500 group-hover:text-pink-600"></i>
+                            <span class="text-gray-700 font-medium text-sm">Instagram</span>
+                        </a>
+                        @endif
+
+                        @if($user->facebook)
+                        <a href="{{ $user->facebook }}"
+                            target="_blank"
+                            class="group flex items-center gap-2 bg-blue-50 hover:bg-blue-100 rounded-full px-3 py-2 transition-all duration-300 transform hover:scale-105">
+                            <i class="fab fa-facebook-f text-blue-500 group-hover:text-blue-600"></i>
+                            <span class="text-gray-700 font-medium text-sm">Facebook</span>
+                        </a>
+                        @endif
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <!-- Informações Detalhadas (se necessário) -->
+        @if($user->address || $user->neighborhood || $user->city || $user->state)
+        <div class="bg-gray-50 border-t border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 py-4">
+                <div class="flex items-start gap-3 text-gray-600 justify-center text-center">
+                    <i class="fas fa-map-marker-alt text-red-500 mt-1"></i>
+                    <div class="text-sm">
+                        @if($user->address)
+                        <span class="font-medium">{{ $user->address }}</span>
+                        @if($user->number), {{ $user->number }}@endif
+                        @if($user->complement) - {{ $user->complement }}@endif
+                        <br>
+                        @endif
+                        @if($user->neighborhood || $user->city || $user->state)
+                        <span class="text-gray-500">
+                            @if($user->neighborhood){{ $user->neighborhood }}@endif
+                            @if($user->neighborhood && ($user->city || $user->state)), @endif
+                            @if($user->city){{ $user->city }}@endif
+                            @if($user->city && $user->state) - @endif
+                            @if($user->state){{ $user->state }}@endif
+                        </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
         <div class="{{ 'bg-['.$user->color_primary.']' }} ">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
                 <div class="glass-effect rounded-3xl p-8">
@@ -635,13 +636,13 @@
             const container = document.getElementById('order-items');
             const tableId = Number(document.getElementById('table_id').value);
             const userId = <?= json_encode($user->id) ?>;
-            
+
             console.log(tableId, userId)
             if (!tableId) {
                 container.innerHTML = '<p class="text-center text-red-500">Abra o link pelo Qr Code da mesa para acessar seus pedidos.</p>';
                 return;
             }
-    
+
             // Show loading
             container.innerHTML = `
                 <div class="text-center py-8 text-gray-500">
