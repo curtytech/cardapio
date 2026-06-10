@@ -222,8 +222,8 @@
                             </div>
                         </div>
                         <!-- Ícone de Expansão/Colapso -->
-                        <div class="accordion-icon transition-transform duration-300" id="icon-{{ $category->name }}">
-                            <i class="fas fa-chevron-down text-2xl" style="color: {{ $category->color ?? $user->color_primary }};"></i>
+                        <div class="accordion-icon transition-transform duration-300" id="icon-{{ $category->name }}" style="transform: rotate(180deg);">
+                            <i class="fas fa-chevron-up text-2xl" style="color: {{ $category->color ?? $user->color_primary }};"></i>
                         </div>
                     </div>
                 </div>
@@ -232,7 +232,7 @@
             <!-- Container de Produtos (Colapsável) -->
             <div class="category-content overflow-hidden transition-all duration-500 ease-in-out"
                 id="content-{{ $category->name }}"
-                style="max-height: 0; opacity: 0;">
+                style="max-height: none; opacity: 1;">
                 <div class="pt-8" id="cat-{{$category->id }}">
                     <!-- Grid de Produtos -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -414,12 +414,20 @@
             }
         }
 
-        // Inicializar todas as categorias como fechadas
+        // Inicializar todas as categorias como abertas
         document.addEventListener('DOMContentLoaded', function() {
             const categoryContents = document.querySelectorAll('.category-content');
             categoryContents.forEach(content => {
-                content.style.maxHeight = '0px';
-                content.style.opacity = '0';
+                content.style.maxHeight = content.scrollHeight + 'px';
+                content.style.opacity = '1';
+            });
+
+            const categoryIcons = document.querySelectorAll('.accordion-icon');
+            categoryIcons.forEach(icon => {
+                const chevron = icon.querySelector('i');
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+                icon.style.transform = 'rotate(180deg)';
             });
         });
 
