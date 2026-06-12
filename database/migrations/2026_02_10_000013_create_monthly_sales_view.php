@@ -11,10 +11,12 @@ return new class extends Migration
 
         // Compatibility for SQLite (local) and MySQL (production)
         $monthExpr = $driver === 'sqlite' ? "strftime('%Y-%m', date)" : "DATE_FORMAT(date, '%Y-%m')";
-        
-        $idExpr = $driver === 'sqlite' 
-            ? "user_id || '-' || strftime('%Y-%m', date)" 
+
+        $idExpr = $driver === 'sqlite'
+            ? "user_id || '-' || strftime('%Y-%m', date)"
             : "CONCAT(user_id, '-', DATE_FORMAT(date, '%Y-%m'))";
+
+        DB::statement("DROP VIEW IF EXISTS monthly_sales_view");
 
         DB::statement("
             CREATE VIEW monthly_sales_view AS
