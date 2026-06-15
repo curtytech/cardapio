@@ -40,10 +40,9 @@ Route::middleware('auth')->group(function () {
 
 // Webhook fica na routes/api.php
 
-// Rota para exibir o cardápio completo de um usuário pelo slug
+Route::get('/{slug}/delivery', [MenuController::class, 'delivery'])->name('menu.delivery');
+
 Route::get('/{slug}/{tableNumber?}', [MenuController::class, 'show'])->name('menu.show');
-// Rota para exibir produtos de uma categoria específica do usuário
-// Route::get('/menu/{userSlug}/{categorySlug}', [MenuController::class, 'category'])->name('menu.category');
 
 Route::middleware('auth')->get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');

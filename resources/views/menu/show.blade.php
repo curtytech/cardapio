@@ -17,6 +17,8 @@
 
 </head>
 
+@php($isDeliveryMode = $isDelivery ?? false)
+
 <body class="min-h-screen" style="background: linear-gradient(135deg, {{ $user->color_primary }}15 0%, {{ $user->color_secondary }}15 100%), linear-gradient(to bottom right, #f8fafc, #e2e8f0);">
     <!-- Header do Restaurante -->
     <header class="relative overflow-hidden">
@@ -76,6 +78,33 @@
 
     <!-- Conteúdo Principal -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        @if(!$tableNumber)
+        <section class="mb-8 animate-fade-in">
+            <div class="bg-white/80 backdrop-blur-lg rounded-3xl p-6 shadow-xl border border-white/20">
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800">Como deseja fazer seu pedido?</h2>
+                        <p class="text-sm text-gray-500 mt-1">Escolha entre atendimento por mesa ou entrega.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full md:w-auto">
+                        <a href="{{ route('menu.show', ['slug' => $user->slug]) }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold transition-all border {{ $isDeliveryMode ? 'bg-white text-gray-700 border-gray-200 hover:border-gray-300' : 'text-white shadow-lg' }}"
+                            @unless($isDeliveryMode) style="background: linear-gradient(135deg, {{ $user->color_primary }}, {{ $user->color_secondary }}); border-color: transparent;" @endunless>
+                            <i class="fas fa-chair"></i>
+                            <span>Pedido na Mesa</span>
+                        </a>
+                        <a href="{{ route('menu.delivery', ['slug' => $user->slug]) }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold transition-all border {{ $isDeliveryMode ? 'text-white shadow-lg' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300' }}"
+                            @if($isDeliveryMode) style="background: linear-gradient(135deg, {{ $user->color_primary }}, {{ $user->color_secondary }}); border-color: transparent;" @endif>
+                            <i class="fas fa-motorcycle"></i>
+                            <span>Delivery</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
         @if($categories->count() > 0)
         <!-- Menu de Navegação das Categorias -->
         <nav class="mb-12 animate-fade-in">
@@ -462,6 +491,7 @@
     </script>
 
     <!-- Order Floating Button -->
+    @unless($isDeliveryMode)
     <div id="order-floating-btn" class="fixed left-6 z-50 cursor-pointer animate-bounce" style="bottom: 110px;" onclick="toggleOrderModal()">
         <div class="bg-green-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-green-700 transition-all transform hover:scale-110 border-2 border-white">
             <div class="relative">
@@ -470,6 +500,7 @@
             </div>
         </div>
     </div>
+    @endunless
 
     <!-- Cart Floating Button -->
     <div id="cart-floating-btn" class="fixed bottom-6 left-6 z-50 cursor-pointer animate-bounce" onclick="toggleCartModal()">
@@ -482,8 +513,10 @@
         </div>
     </div>
 
+    @unless($isDeliveryMode)
     <div id="order-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="toggleOrderModal()"></div>
+
 
         <div class="fixed inset-0 z-10 overflow-y-auto pointer-events-none">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -512,6 +545,7 @@
             </div>
         </div>
     </div>
+    @endunless
 
     <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -540,7 +574,28 @@
 
                         <div class="mt-4 space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar w-full">
                             <input id="client_name" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Seu nome">
-
+                            @if($isDeliveryMode)
+                            <input id="client_phone" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Seu telefone">
+                            <input id="zipcode" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="CEP">
+                            <input id="address" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Endereco">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input id="delivery_number" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Numero">
+                                <input id="neighborhood" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Bairro">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <input id="city" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500 sm:col-span-2" placeholder="Cidade">
+                                <input id="state" type="text" maxlength="2" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold uppercase text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="UF">
+                            </div>
+                            <input id="complement" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Complemento">
+                            <input id="reference" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ponto de referencia">
+                            <select id="payment_method" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Forma de pagamento</option>
+                                <option value="pix">Pix</option>
+                                <option value="dinheiro">Dinheiro</option>
+                                <option value="cartao_credito">Cartao de credito</option>
+                                <option value="cartao_debito">Cartao de debito</option>
+                            </select>
+                            @else
                             <select id="table_id" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500"
                                 <?= $tableNumber ? 'disabled="true"' : '' ?>>
                                 <option value="">Selecione sua mesa</option>
@@ -550,12 +605,19 @@
                                 </option>
                                 @endforeach
                             </select>
+                            @endif
 
                         </div>
 
                         <div class="mt-6 border-t pt-4 bg-gray-50 -mx-6 -mb-4 p-6">
+                            @if($isDeliveryMode)
+                            <div class="flex justify-between items-center text-sm font-medium text-gray-500 mb-2">
+                                <span>Taxa de entrega</span>
+                                <span>R$ 0,00</span>
+                            </div>
+                            @endif
                             <div class="flex justify-between items-center text-lg font-bold text-gray-900 mb-4">
-                                <span>Total do Pedido</span>
+                                <span>{{ $isDeliveryMode ? 'Total do Delivery' : 'Total do Pedido' }}</span>
                                 <span id="cart-modal-total" class="text-2xl text-green-600">R$ 0,00</span>
                             </div>
 
@@ -577,6 +639,8 @@
 
     <script src="{{ asset('js/cart.js') }}"></script>
     <script>
+        const isDeliveryMode = @json($isDeliveryMode);
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize cart manager
             window.cartManager = new CartManager();
@@ -775,29 +839,14 @@
         }
 
         function finalizeOrder() {
-
-            let clientIP = '';
-            fetch('https://api.ipify.org?format=json')
-                .then(res => res.json())
-                .then(data => {
-                    clientIP = data.ip;
-                });
-
             const orderData = {
                 cart: window.cartManager.getItems(),
                 total: window.cartManager.getTotal(),
-                table_id: Number(document.getElementById('table_id').value),
                 user_id: <?= $user->id ?>,
                 client_name: document.getElementById('client_name').value,
                 observation: document.getElementById('observation').value,
-                ip: clientIP || '0',
                 date: new Date().toISOString().slice(0, 10),
             };
-
-            if (!orderData.table_id) {
-                showNotification('Por favor, selecione sua mesa.', 'error');
-                return;
-            }
 
             if (orderData.total === 0 || !orderData.cart.length) {
                 showNotification('Carrinho vazio! Adicione itens antes de finalizar.', 'error');
@@ -809,13 +858,47 @@
                 return;
             }
 
+            let endpoint = "{{ route('client.buys') }}";
+
+            if (isDeliveryMode) {
+                orderData.client_phone = document.getElementById('client_phone').value;
+                orderData.zipcode = document.getElementById('zipcode').value;
+                orderData.address = document.getElementById('address').value;
+                orderData.number = document.getElementById('delivery_number').value;
+                orderData.neighborhood = document.getElementById('neighborhood').value;
+                orderData.city = document.getElementById('city').value;
+                orderData.state = document.getElementById('state').value;
+                orderData.complement = document.getElementById('complement').value;
+                orderData.reference = document.getElementById('reference').value;
+                orderData.payment_method = document.getElementById('payment_method').value;
+
+                if (!orderData.client_phone || orderData.client_phone.trim() === '') {
+                    showNotification('Por favor, informe seu telefone.', 'error');
+                    return;
+                }
+
+                if (!orderData.address || orderData.address.trim() === '') {
+                    showNotification('Por favor, informe o endereco de entrega.', 'error');
+                    return;
+                }
+
+                endpoint = "{{ route('client.delivery.buys') }}";
+            } else {
+                orderData.table_id = Number(document.getElementById('table_id').value);
+
+                if (!orderData.table_id) {
+                    showNotification('Por favor, selecione sua mesa.', 'error');
+                    return;
+                }
+            }
+
             // Show loading state
             const btn = event.currentTarget;
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
 
-            fetch("{{ route('client.buys') }}", {
+            fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

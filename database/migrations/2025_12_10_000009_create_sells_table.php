@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sells', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('table_id')->constrained('restaurant_tables')->onDelete('cascade');
+            $table->foreignId('table_id')->nullable()->constrained('restaurant_tables')->nullOnDelete();
             $table->ipAddress('ip')->default('0.0.0.0');
             $table->string('client_name')->nullable();
             $table->timestamp('date')->nullable();

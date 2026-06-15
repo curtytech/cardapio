@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sell extends Model
@@ -41,6 +42,11 @@ class Sell extends Model
     public function sellProductsGroups(): HasMany
     {
         return $this->hasMany(SellProductGroup::class);
+    }
+
+    public function delivery(): HasOne
+    {
+        return $this->hasOne(Delivery::class);
     }
 
     public function getMesaLabelAttribute(): ?string

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\MercadoPagoController;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\SellController;
@@ -35,3 +36,6 @@ Route::post('/client-buys', [SellController::class, 'clientBuys'])
 
 Route::post('/client-orders', [SellController::class, 'clientOrders'])
     ->name('client.orders');
+
+Route::post('/client-delivery-buys', [DeliveryController::class, 'store'])
+    ->name('client.delivery.buys');

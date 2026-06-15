@@ -13,15 +13,20 @@ use Illuminate\Support\Carbon;
 
 class MenuController extends Controller
 {
-    /**
-     * Exibe o cardápio de um usuário específico baseado no slug.
-     */
     public function show(string $slug, ?string $tableNumber = null)
     {
-        // Busca o usuário pelo slug
+        return $this->renderMenu($slug, $tableNumber, false);
+    }
+
+    public function delivery(string $slug)
+    {
+        return $this->renderMenu($slug, null, true);
+    }
+
+    protected function renderMenu(string $slug, ?string $tableNumber = null, bool $isDelivery = false)
+    {
         $user = User::where('slug', $slug)->firstOrFail();
-        
-        // Verifica se existe algum pagamento para esse usuário
+
         $hasPayment = Payment::where('user_id', $user->id)
             ->where('mercadopago_status', 'approved')
             ->where(function ($q) {
@@ -49,7 +54,6 @@ class MenuController extends Controller
 
         $viewsTotal = UserPageView::where('user_id', $user->id)->value('views_count') ?? 0;
 
-        // Busca as categorias do usuário com seus produtos ativos
         $categories = Category::where('user_id', $user->id)
             ->where('is_active', true)
             ->with(['products' => function ($query) {
@@ -58,8 +62,7 @@ class MenuController extends Controller
             }])
             ->orderBy('name')
             ->get();
-        
-        // Filtra apenas categorias que têm produtos
+
         $categories = $categories->filter(function ($category) {
             return $category->products->count() > 0;
         });
@@ -72,30 +75,32 @@ class MenuController extends Controller
         if ($tableNumber && !$restaurantTables->contains('number', $tableNumber)) {
             return redirect()->route('menu.show', ['slug' => $slug]);
         }
-        
-        return view('menu.show', compact('user', 'categories', 'restaurantTables', 'tableNumber', 'hasPayment', 'viewsTotal'));
+
+        return view('menu.show', [
+            'user' => $user,
+            'categories' => $categories,
+            'restaurantTables' => $restaurantTables,
+            'tableNumber' => $tableNumber,
+            'hasPayment' => $hasPayment,
+            'viewsTotal' => $viewsTotal,
+            'isDelivery' => $isDelivery,
+        ]);
     }
-    
-    /**
-     * Exibe todos os produtos de uma categoria específica do usuário.
-     */
+
     public function category(string $userSlug, string $categorySlug)
     {
-        // Busca o usuário pelo slug
         $user = User::where('slug', $userSlug)->firstOrFail();
-        
-        // Busca a categoria pelo slug e usuário
+
         $category = Category::where('slug', $categorySlug)
             ->where('user_id', $user->id)
             ->where('is_active', true)
             ->firstOrFail();
-        
-        // Busca os produtos da categoria
+
         $products = Product::where('category_id', $category->id)
             ->where('status', 'active')
             ->orderBy('name')
             ->get();
-        
+
         return view('menu.category', compact('user', 'category', 'products'));
     }
 }
