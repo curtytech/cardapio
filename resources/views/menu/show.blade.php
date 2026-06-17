@@ -101,6 +101,24 @@
                         </a>
                     </div>
                 </div>
+
+                @if($isDeliveryMode)
+                <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/80 p-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-blue-900">Ja fez uma compra?</h3>
+                            <p class="text-sm text-blue-700">Consulte aqui suas compras delivery realizadas neste dispositivo.</p>
+                        </div>
+                        <button
+                            type="button"
+                            onclick="toggleOrderModal()"
+                            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-blue-700 hover:shadow-blue-500/25">
+                            <i class="fas fa-receipt"></i>
+                            <span>Ver compra efetuada</span>
+                        </button>
+                    </div>
+                </div>
+                @endif
             </div>
         </section>
         @endif
@@ -491,16 +509,15 @@
     </script>
 
     <!-- Order Floating Button -->
-    @unless($isDeliveryMode)
     <div id="order-floating-btn" class="fixed left-6 z-50 cursor-pointer animate-bounce" style="bottom: 110px;" onclick="toggleOrderModal()">
-        <div class="bg-green-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-3 hover:bg-green-700 transition-all transform hover:scale-110 border-2 border-white">
+        <div class="{{ $isDeliveryMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700' }} text-white rounded-full p-4 shadow-2xl flex items-center gap-3 transition-all transform hover:scale-110 border-2 border-white">
             <div class="relative">
-                <i class="fas fa-list-alt text-xl"></i>
+                <i class="fas {{ $isDeliveryMode ? 'fa-receipt' : 'fa-list-alt' }} text-xl"></i>
                 <!-- <span id="order-count" class="absolute -top-2 -right-2 bg-white text-green-600 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-sm">0</span> -->
             </div>
+            <span class="hidden sm:inline font-bold">{{ $isDeliveryMode ? 'Ver compra' : 'Meus pedidos' }}</span>
         </div>
     </div>
-    @endunless
 
     <!-- Cart Floating Button -->
     <div id="cart-floating-btn" class="fixed bottom-6 left-6 z-50 cursor-pointer animate-bounce" onclick="toggleCartModal()">
@@ -513,7 +530,6 @@
         </div>
     </div>
 
-    @unless($isDeliveryMode)
     <div id="order-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="toggleOrderModal()"></div>
 
@@ -524,12 +540,35 @@
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="flex justify-between items-center mb-6 border-b pb-4">
                             <h3 class="text-xl font-bold leading-6 text-gray-900 flex items-center gap-2" id="modal-title">
-                                <i class="fas fa-list-alt text-green-500"></i> Meus Pedidos
+                                <i class="fas {{ $isDeliveryMode ? 'fa-receipt text-blue-500' : 'fa-list-alt text-green-500' }}"></i> {{ $isDeliveryMode ? 'Minhas Compras Delivery' : 'Meus Pedidos' }}
                             </h3>
                             <button onclick="toggleOrderModal()" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
                                 <i class="fas fa-times text-xl"></i>
                             </button>
                         </div>
+
+                        @if($isDeliveryMode)
+                        <div class="mb-4 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                            <label for="delivery_lookup_phone" class="mb-2 block text-sm font-bold text-blue-900">
+                                Digite seu numero de telefone para ver suas compras
+                            </label>
+                            <div class="flex flex-col gap-3 sm:flex-row">
+                                <input
+                                    id="delivery_lookup_phone"
+                                    type="text"
+                                    class="w-full rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Ex.: (11) 99999-9999"
+                                >
+                                <button
+                                    type="button"
+                                    onclick="loadOrders()"
+                                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-blue-700 sm:min-w-40">
+                                    <i class="fas fa-magnifying-glass"></i>
+                                    <span>Buscar compras</span>
+                                </button>
+                            </div>
+                        </div>
+                        @endif
 
                         <div id="order-items" class="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                             <!-- Orders will be injected here -->
@@ -545,7 +584,6 @@
             </div>
         </div>
     </div>
-    @endunless
 
     <!-- Cart Modal -->
     <div id="cart-modal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -694,12 +732,48 @@
 
         function loadOrders() {
             const container = document.getElementById('order-items');
-            const tableId = Number(document.getElementById('table_id').value);
             const userId = <?= json_encode($user->id) ?>;
 
-            console.log(tableId, userId)
-            if (!tableId) {
-                container.innerHTML = '<p class="text-center text-red-500">Abra o link pelo Qr Code da mesa para acessar seus pedidos.</p>';
+            if (isDeliveryMode) {
+                const phoneInput = document.getElementById('delivery_lookup_phone');
+                const clientPhone = phoneInput?.value?.trim() ?? '';
+
+                if (!clientPhone) {
+                    container.innerHTML = '<p class="text-center text-blue-600">Digite seu numero de telefone para consultar suas compras delivery.</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                        <p>Carregando compras...</p>
+                    </div>`;
+
+                fetch("{{ route('client.delivery.orders') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            user_id: userId,
+                            client_phone: clientPhone,
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            renderDeliveryOrders(data.orders);
+                        } else {
+                            container.innerHTML = '<p class="text-center text-red-500">Erro ao carregar compras delivery.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        container.innerHTML = '<p class="text-center text-red-500">Erro ao carregar compras delivery.</p>';
+                    });
+
                 return;
             }
 
@@ -709,6 +783,13 @@
                     <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
                     <p>Carregando pedidos...</p>
                 </div>`;
+
+            const tableId = Number(document.getElementById('table_id').value);
+
+            if (!tableId) {
+                container.innerHTML = '<p class="text-center text-red-500">Abra o link pelo Qr Code da mesa para acessar seus pedidos.</p>';
+                return;
+            }
 
             fetch("{{ route('client.orders') }}", {
                     method: 'POST',
@@ -734,6 +815,59 @@
                     console.error('Error:', error);
                     container.innerHTML = '<p class="text-center text-red-500">Erro ao carregar pedidos.</p>';
                 });
+        }
+
+        function renderDeliveryOrders(orders) {
+            const container = document.getElementById('order-items');
+
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-receipt text-3xl text-gray-300"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">Nenhuma compra delivery encontrada</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => {
+                const date = new Date(order.created_at).toLocaleString('pt-BR');
+                const total = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(order.total);
+
+                const itemsHtml = (order.sell?.sell_products_groups ?? []).map(group => `
+                    <div class="flex justify-between text-sm text-gray-600 mt-1 border-b border-gray-50 pb-1 last:border-0">
+                        <span class="font-medium">${group.quantity}x ${group.product.name}</span>
+                    </div>
+                `).join('');
+
+                return `
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all">
+                    <div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2">
+                        <div>
+                            <span class="text-xs font-bold text-gray-400 block mb-1">DELIVERY #${order.id}</span>
+                            <div class="text-xs text-gray-500"><i class="far fa-calendar-alt mr-1"></i> ${date}</div>
+                        </div>
+                        <span class="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                            ${order.status}
+                        </span>
+                    </div>
+                    <div class="mb-3 space-y-1 bg-gray-50 p-3 rounded-lg">
+                        ${itemsHtml}
+                    </div>
+                    <div class="text-xs text-gray-500 mb-2">
+                        <strong>Endereco:</strong> ${[order.address, order.number, order.neighborhood, order.city, order.state].filter(Boolean).join(', ')}
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-sm font-medium text-gray-600">Total</span>
+                        <span class="text-lg font-bold text-green-600">${total}</span>
+                    </div>
+                </div>
+                `;
+            }).join('');
         }
 
         function renderOrders(orders) {
@@ -921,6 +1055,14 @@
                                 localStorage.setItem('my_orders', JSON.stringify(myOrders));
                             }
                             // updateOrderCount();
+                        }
+
+                        if (data.delivery_id) {
+                            const myDeliveries = JSON.parse(localStorage.getItem('my_deliveries') || '[]');
+                            if (!myDeliveries.includes(data.delivery_id)) {
+                                myDeliveries.push(data.delivery_id);
+                                localStorage.setItem('my_deliveries', JSON.stringify(myDeliveries));
+                            }
                         }
 
                         window.cartManager.clear();

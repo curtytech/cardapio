@@ -39,3 +39,6 @@ Route::post('/client-orders', [SellController::class, 'clientOrders'])
 
 Route::post('/client-delivery-buys', [DeliveryController::class, 'store'])
     ->name('client.delivery.buys');
+
+Route::post('/client-delivery-orders', [DeliveryController::class, 'clientOrders'])
+    ->name('client.delivery.orders');

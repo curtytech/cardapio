@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Actions\CreateDeliveryOrderAction;
 use App\Actions\CreateDeliveryMercadoPagoCheckoutAction;
 use App\Http\Requests\StoreDeliveryOrderRequest;
+use App\Models\Delivery;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -45,5 +47,44 @@ class DeliveryController extends Controller
                 'error' => 'Erro ao processar pedido de delivery.',
             ], 500);
         }
+    }
+
+    public function clientOrders(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'client_phone' => ['required', 'string', 'max:30'],
+        ]);
+
+        $normalizedPhone = $this->normalizePhone($validated['client_phone']);
+
+        if ($normalizedPhone === '') {
+            return response()->json([
+                'success' => true,
+                'orders' => [],
+            ]);
+        }
+
+        $orders = Delivery::query()
+            ->where('user_id', (int) $validated['user_id'])
+            ->with([
+                'sell.sellProductsGroups.product',
+            ])
+            ->latest()
+            ->get()
+            ->filter(function (Delivery $delivery) use ($normalizedPhone): bool {
+                return $this->normalizePhone((string) $delivery->client_phone) === $normalizedPhone;
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'orders' => $orders,
+        ]);
+    }
+
+    private function normalizePhone(string $phone): string
+    {
+        return preg_replace('/\D+/', '', $phone) ?? '';
     }
 }
