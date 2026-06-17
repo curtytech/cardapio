@@ -59,6 +59,14 @@ class PaymentResource extends Resource
                     ->label('Usuário')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('payment_context')
+                    ->label('Contexto')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'delivery' => 'Delivery',
+                        'subscription', null => 'Assinatura',
+                        default => ucfirst((string) $state),
+                    }),
                 Tables\Columns\TextColumn::make('mercadopago_payment_id')
                     ->label('Pagamento ID')
                     ->searchable()
@@ -84,6 +92,11 @@ class PaymentResource extends Resource
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Valor')
+                    ->money('BRL')
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('mercadopago_response')
                     ->label('Resposta')
                     ->limit(50)
@@ -107,6 +120,12 @@ class PaymentResource extends Resource
                         'approved' => 'Aprovado',
                         'pending' => 'Pendente',
                         'rejected' => 'Rejeitado',
+                    ]),
+                Tables\Filters\SelectFilter::make('payment_context')
+                    ->label('Contexto')
+                    ->options([
+                        'subscription' => 'Assinatura',
+                        'delivery' => 'Delivery',
                     ]),
             ])
             ->actions([

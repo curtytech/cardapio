@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Delivery;
+use App\Models\MercadoPagoInfo;
 use App\Models\Payment;
+use App\Models\Sell;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -86,7 +89,6 @@ class MercadoPagoController extends Controller
 
     public function webhook(Request $request)
     {
-        // Log básico do evento recebido
         Log::info('Webhook Mercado Pago recebido', [
             'query' => $request->query(),
             'body' => $request->all(),
@@ -96,14 +98,18 @@ class MercadoPagoController extends Controller
             ],
         ]);
 
-        $accessToken = env('MERCADOPAGO_ACCESS_TOKEN');
+        $context = (string) ($request->query('context') ?? $request->input('context') ?? 'subscription');
+        $userIdFromQuery = (int) ($request->query('user_id') ?? $request->input('user_id') ?? 0);
+        $accessToken = $this->resolveAccessToken($context, $userIdFromQuery);
+
         if (!$accessToken) {
-            Log::error('MERCADOPAGO_ACCESS_TOKEN não configurado');
+            Log::error('Access token do Mercado Pago nao configurado para o webhook', [
+                'context' => $context,
+                'user_id' => $userIdFromQuery,
+            ]);
             return response()->json(['ok' => true], 200);
         }
 
-        // Suporta payloads: { data: { id }, type: 'payment', action: 'payment.created' }
-        // e também id via query string (?id=...&type=payment)
         $paymentId = $request->input('data.id')
             ?? $request->input('id')
             ?? $request->query('id');
@@ -121,7 +127,6 @@ class MercadoPagoController extends Controller
             return response()->json(['ok' => true], 200);
         }
 
-        // Consulta detalhes do pagamento
         $paymentResp = Http::withToken($accessToken)
             ->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
 
@@ -131,7 +136,6 @@ class MercadoPagoController extends Controller
                 'status' => $paymentResp->status(),
                 'body' => $paymentResp->body(),
             ]);
-            // Retorna 200 para evitar retries excessivos; mantemos logs para análise
             return response()->json(['ok' => true], 200);
         }
 
@@ -145,9 +149,13 @@ class MercadoPagoController extends Controller
         $status = data_get($detail, 'status');
         $dateApproved = data_get($detail, 'date_approved'); // ISO8601
         $userId = (int) (data_get($detail, 'metadata.user_id') ?? data_get($detail, 'external_reference') ?? 0);
+        $paymentContext = (string) (data_get($detail, 'metadata.payment_context') ?? $context ?: 'subscription');
+        $deliveryId = data_get($detail, 'metadata.delivery_id');
+        $sellId = data_get($detail, 'metadata.sell_id');
+        $amount = (float) (data_get($detail, 'transaction_amount') ?? 0);
 
         $dataPagamento = $dateApproved ? Carbon::parse($dateApproved) : null;
-        $expiration = $dataPagamento ? $dataPagamento->copy()->addYear() : null;
+        $expiration = $paymentContext === 'subscription' && $dataPagamento ? $dataPagamento->copy()->addYear() : null;
 
         // Tentativas para preference_id
         $preferenceId =
@@ -159,13 +167,33 @@ class MercadoPagoController extends Controller
             ['mercadopago_payment_id' => (string) $paymentId],
             [
                 'user_id' => $userId ?: null,
+                'payment_context' => 'subscription',
+                'mercadopago_preference_id' => $preferenceId,
+                'mercadopago_status' => $status,
+                'data_pagamento' => $dataPagamento,
                 'mercadopago_preference_id' => $preferenceId,
                 'mercadopago_status' => $status,
                 'data_pagamento' => $dataPagamento,
                 'expiration_date' => $expiration,
                 'mercadopago_response' => json_encode($detail),
+                'amount' => $amount ?: null,
             ]
         );
+
+        if ($paymentContext === 'delivery' && $status === 'approved') {
+            Delivery::query()
+                ->whereKey($deliveryId)
+                ->update([
+                    'is_paid' => true,
+                    'payment_method' => 'mercado_pago',
+                ]);
+
+            Sell::query()
+                ->whereKey($sellId)
+                ->update([
+                    'is_paid' => true,
+                ]);
+        }
 
         Log::info('Pagamento registrado/atualizado com sucesso', [
             'payment_id' => $paymentId,
@@ -174,5 +202,16 @@ class MercadoPagoController extends Controller
         ]);
 
         return response()->json(['ok' => true], 200);
+    }
+
+    protected function resolveAccessToken(string $context, int $userId): ?string
+    {
+        if ($context === 'delivery' && $userId > 0) {
+            return MercadoPagoInfo::query()
+                ->where('user_id', $userId)
+                ->value('mercadopago_access_token');
+        }
+
+        return env('MERCADOPAGO_ACCESS_TOKEN');
     }
 }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('mercadopago_access_token');
             $table->string('mercadopago_public_key');
-            $table->string('access_token');
+            $table->string('access_token')->nullable();
             $table->timestamps();
         });
     }

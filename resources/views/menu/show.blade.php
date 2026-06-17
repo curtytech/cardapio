@@ -589,11 +589,7 @@
                             <input id="complement" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Complemento">
                             <input id="reference" type="text" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ponto de referencia">
                             <select id="payment_method" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all focus:outline-none focus:ring-2 focus:ring-green-500">
-                                <option value="">Forma de pagamento</option>
-                                <option value="pix">Pix</option>
-                                <option value="dinheiro">Dinheiro</option>
-                                <option value="cartao_credito">Cartao de credito</option>
-                                <option value="cartao_debito">Cartao de debito</option>
+                                <option value="mercado_pago" selected>Mercado Pago</option>
                             </select>
                             @else
                             <select id="table_id" class="w-full justify-center rounded-xl bg-white px-3 py-3 text-base font-bold text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-all sm:mt-0 sm:w-auto focus:outline-none focus:ring-2 focus:ring-green-500"

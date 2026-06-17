@@ -28,6 +28,10 @@ class MenuController extends Controller
         $user = User::where('slug', $slug)->firstOrFail();
 
         $hasPayment = Payment::where('user_id', $user->id)
+            ->where(function ($query) {
+                $query->where('payment_context', 'subscription')
+                    ->orWhereNull('payment_context');
+            })
             ->where('mercadopago_status', 'approved')
             ->where(function ($q) {
                 $q->whereNull('expiration_date')->orWhere('expiration_date', '>', now());

@@ -68,11 +68,11 @@ return new class extends Migration
 
     private function createMonthlySalesView(string $driver): void
     {
-        $monthExpr = $driver === 'sqlite' ? "strftime('%Y-%m', date)" : "DATE_FORMAT(date, '%Y-%m')";
+        $monthExpr = $driver === 'sqlite' ? "strftime('%Y-%m', s.date)" : "DATE_FORMAT(s.date, '%Y-%m')";
 
         $idExpr = $driver === 'sqlite'
-            ? "user_id || '-' || strftime('%Y-%m', date)"
-            : "CONCAT(user_id, '-', DATE_FORMAT(date, '%Y-%m'))";
+            ? "s.user_id || '-' || strftime('%Y-%m', s.date)"
+            : "CONCAT(s.user_id, '-', DATE_FORMAT(s.date, '%Y-%m'))";
 
         DB::statement("
             CREATE VIEW monthly_sales_view AS

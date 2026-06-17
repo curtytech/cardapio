@@ -49,6 +49,11 @@ class Sell extends Model
         return $this->hasOne(Delivery::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function getMesaLabelAttribute(): ?string
     {
         return $this->restaurantTable?->number;

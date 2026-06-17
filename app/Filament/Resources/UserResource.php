@@ -197,6 +197,20 @@ class UserResource extends Resource
                             ->default('#8B5CF6')
                             ->helperText('Cor secundária para gradientes e detalhes'),
                     ])->columns(2),
+                Forms\Components\Section::make('Mercado Pago')
+                    ->relationship('mercadoPagoInfo')
+                    ->schema([
+                        Forms\Components\TextInput::make('mercadopago_public_key')
+                            ->label('Public Key')
+                            ->maxLength(255)
+                            ->helperText('Chave pública da conta Mercado Pago desta loja.'),
+                        Forms\Components\TextInput::make('mercadopago_access_token')
+                            ->label('Access Token')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255)
+                            ->helperText('Token privado usado para criar checkout e consultar pagamentos.'),
+                    ])->columns(2),
             ]);
     }
 
